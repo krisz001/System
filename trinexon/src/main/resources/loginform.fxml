@@ -6,13 +6,19 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.Pane?>
 
-
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="190.0" prefWidth="434.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<Pane xmlns="http://javafx.com/javafx/23.0.1" 
+      xmlns:fx="http://javafx.com/fxml/1" 
+      fx:controller="System.trinexon.LoginController"
+      prefHeight="190.0" prefWidth="434.0">
    <children>
-      <PasswordField fx:id="passwordField" layoutX="137.0" layoutY="100.0" />
-      <TextField fx:id="usernameField" layoutX="137.0" layoutY="33.0" />
-      <Label layoutX="32.0" layoutY="38.0" text="Felhasználó név: " />
+      <Label layoutX="32.0" layoutY="38.0" text="Felhasználó név:" />
       <Label layoutX="78.0" layoutY="105.0" text="Jelszó:" />
-      <Button fx:id="loginButton" layoutX="187.0" layoutY="143.0" mnemonicParsing="false" text="Belépés" />
+
+      <TextField fx:id="usernameField" layoutX="137.0" layoutY="33.0" />
+      <PasswordField fx:id="passwordField" layoutX="137.0" layoutY="100.0" />
+
+      <Button fx:id="loginButton" layoutX="187.0" layoutY="143.0" 
+              mnemonicParsing="false" text="Belépés" 
+              onAction="#handleLogin" />
    </children>
 </Pane>

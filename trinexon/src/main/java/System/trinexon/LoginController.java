@@ -48,8 +48,15 @@ public class LoginController {
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                String hashedPassword = rs.getString("password");
-                return BCrypt.checkpw(password, hashedPassword);
+                String storedPassword = rs.getString("password");
+                
+                if (storedPassword != null) {
+                    if (storedPassword.startsWith("$2a$") || storedPassword.startsWith("$2b$") || storedPassword.startsWith("$2y$")) {
+                        return BCrypt.checkpw(password, storedPassword);
+                    } else {
+                        return password.equals(storedPassword);
+                    }
+                }
             }
 
         } catch (SQLException e) {
