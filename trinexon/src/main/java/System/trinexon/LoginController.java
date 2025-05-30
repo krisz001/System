@@ -6,9 +6,11 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.scene.control.Alert.AlertType;
 import org.mindrot.jbcrypt.BCrypt;
+
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -25,7 +27,7 @@ public class LoginController {
 
     @FXML
     private void handleLogin() {
-        String username = usernameField.getText();
+        String username = usernameField.getText().trim();
         String password = passwordField.getText();
 
         if (username.isEmpty() || password.isEmpty()) {
@@ -35,32 +37,45 @@ public class LoginController {
 
         if (checkCredentials(username, password)) {
             showAlert(AlertType.INFORMATION, "Sikeres belépés", "Üdvözöllek, " + username + "!");
-            openDashboard(username);  // Itt megnyitjuk az új ablakot a dashboarddal
-            System.out.println("Belépés sikeres, irány a dashboard!");
+            openDashboard(username);
         } else {
             showAlert(AlertType.ERROR, "Sikertelen belépés", "Hibás felhasználónév vagy jelszó!");
         }
     }
 
     private void openDashboard(String username) {
-        System.out.println("Trying to open dashboard for user: " + username);
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/Dashboard.fxml"));
-            Scene scene = new Scene(loader.load());
+            AnchorPane root = loader.load();
+
             DashboardController controller = loader.getController();
             controller.setUsername(username);
 
+            Scene scene = new Scene(root);
+
             Stage stage = new Stage();
-            stage.setScene(scene);
             stage.setTitle("Dashboard");
+            stage.setScene(scene);
+
+            // Méretet beállítjuk az FXML-ben megadott méretre
+            double width = root.getPrefWidth();
+            double height = root.getPrefHeight();
+
+            stage.setWidth(width);
+            stage.setHeight(height);
+            stage.setMinWidth(width);
+            stage.setMinHeight(height);
+            stage.setMaxWidth(width);
+            stage.setMaxHeight(height);
+
             stage.show();
-            System.out.println("Dashboard should be showing now.");
+
         } catch (IOException e) {
-            System.out.println("Error loading FXML:");
+            System.err.println("Hiba történt a Dashboard betöltésekor:");
             e.printStackTrace();
+            showAlert(AlertType.ERROR, "Betöltési hiba", "Nem sikerült megnyitni a Dashboardot.");
         }
     }
-
 
     private boolean checkCredentials(String username, String password) {
         String sql = "SELECT password FROM users WHERE username = ?";
@@ -75,11 +90,9 @@ public class LoginController {
                 String storedPassword = rs.getString("password");
 
                 if (storedPassword != null) {
-                    // Ha bcrypt hashelve van tárolva
                     if (storedPassword.startsWith("$2a$") || storedPassword.startsWith("$2b$") || storedPassword.startsWith("$2y$")) {
                         return BCrypt.checkpw(password, storedPassword);
                     } else {
-                        // Ha sima szövegként van tárolva (átmeneti megoldás)
                         return password.equals(storedPassword);
                     }
                 }
@@ -87,6 +100,7 @@ public class LoginController {
 
         } catch (SQLException e) {
             e.printStackTrace();
+            showAlert(AlertType.ERROR, "Adatbázis hiba", "Nem sikerült ellenőrizni a felhasználó hitelesítését.");
         }
 
         return false;
