@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.text.Font?>
+
+<VBox prefHeight="600.0" prefWidth="900.0"
+      xmlns="http://javafx.com/javafx/20"
+      xmlns:fx="http://javafx.com/fxml/1">
+
+  <fx:define>
+    <Font fx:id="x1" size="18.0" />
+    <Color fx:id="x2" red="0.624" green="0.624" blue="0.624" />
+    <Font fx:id="x3" size="11.0" />
+    <Color fx:id="x4" red="0.625" green="0.625" blue="0.625" />
+  </fx:define>
+
+  <children>
+    <MenuBar VBox.vgrow="NEVER">
+      <menus>
+        <Menu text="File">
+          <items>
+            <MenuItem text="New" />
+            <MenuItem text="Open…" />
+            <Menu text="Open Recent" />
+            <SeparatorMenuItem />
+            <MenuItem text="Close" />
+            <MenuItem text="Save" />
+            <MenuItem text="Save As…" />
+            <MenuItem text="Revert" />
+            <SeparatorMenuItem />
+            <MenuItem text="Preferences…" />
+            <SeparatorMenuItem />
+            <MenuItem text="Quit" />
+          </items>
+        </Menu>
+        <Menu text="Edit">
+          <items>
+            <MenuItem text="Undo" />
+            <MenuItem text="Redo" />
+            <SeparatorMenuItem />
+            <MenuItem text="Cut" />
+            <MenuItem text="Copy" />
+            <MenuItem text="Paste" />
+            <MenuItem text="Delete" />
+            <SeparatorMenuItem />
+            <MenuItem text="Select All" />
+            <MenuItem text="Unselect All" />
+          </items>
+        </Menu>
+        <Menu text="Help">
+          <items>
+            <MenuItem text="About MyHelloApp" />
+          </items>
+        </Menu>
+      </menus>
+    </MenuBar>
+
+    <SplitPane dividerPositions="0.2505567928730512, 0.7505567928730512"
+               VBox.vgrow="ALWAYS">
+      <items>
+        <AnchorPane>
+          <children>
+            <Label alignment="CENTER" layoutX="14.0" layoutY="14.0"
+                   prefWidth="60.0" text="Master" textAlignment="CENTER"
+                   font="$x1" textFill="$x2" />
+          </children>
+        </AnchorPane>
+
+        <ScrollPane>
+          <content>
+            <AnchorPane id="Content" prefHeight="545.0" prefWidth="430.0">
+              <children>
+                <Label alignment="CENTER" layoutX="14.0" layoutY="14.0"
+                       text="View" textAlignment="CENTER"
+                       font="$x1" textFill="$x2" />
+              </children>
+            </AnchorPane>
+          </content>
+        </ScrollPane>
+
+        <AnchorPane>
+          <children>
+            <Label alignment="CENTER" layoutX="14.0" layoutY="14.0"
+                   text="Details" textAlignment="CENTER"
+                   font="$x1" textFill="$x2" />
+          </children>
+        </AnchorPane>
+      </items>
+    </SplitPane>
+
+    <HBox alignment="CENTER_LEFT" spacing="5.0" VBox.vgrow="NEVER">
+      <children>
+        <Label text="Left status" maxHeight="Infinity"
+               font="$x3" textFill="$x4" HBox.hgrow="ALWAYS" />
+        <Pane HBox.hgrow="ALWAYS" />
+        <Label text="Right status"
+               font="$x3" textFill="$x4" HBox.hgrow="NEVER" />
+      </children>
+      <padding>
+        <Insets top="3.0" bottom="3.0" left="3.0" right="3.0" />
+      </padding>
+    </HBox>
+  </children>
+</VBox>
