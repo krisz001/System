@@ -5,31 +5,31 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="System.trinexon.FinanceController">
-    
-    <!-- Felső rész: Szűrési lehetőségek -->
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            xmlns="http://javafx.com/javafx"
+            fx:controller="System.trinexon.FinanceController"
+            stylesheets="@css/finance.css">
+
+    <!-- Felső rész: Szűrés -->
     <top>
-        <HBox spacing="10" style="-fx-background-color: #f0f0f0;">
+        <HBox spacing="10" fx:id="filterBar" styleClass="top-bar">
             <padding>
                 <Insets top="10" right="10" bottom="10" left="10"/>
             </padding>
             <Label text="Időszak:"/>
             <DatePicker fx:id="fromDatePicker" promptText="Kezdő dátum"/>
             <DatePicker fx:id="toDatePicker" promptText="Végdátum"/>
-
             <Label text="Kategória:"/>
-            <ComboBox fx:id="categoryComboBox" prefWidth="150"/>
-
+            <ComboBox fx:id="categoryComboBox" prefWidth="150" promptText="Válassz kategóriát"/>
             <Label text="Projekt:"/>
-            <ComboBox fx:id="projectComboBox" prefWidth="150"/>
-
-            <Button text="Szűrés" onAction="#onFilter"/>
+            <ComboBox fx:id="projectComboBox" prefWidth="150" promptText="Válassz projektet"/>
+            <Button text="Szűrés" onAction="#onFilter" styleClass="primary-button"/>
         </HBox>
     </top>
 
-    <!-- Középső rész: Tartalom -->
+    <!-- Középső rész -->
     <center>
-        <TabPane fx:id="financeTabPane" tabClosingPolicy="UNAVAILABLE">
+        <TabPane fx:id="financeTabPane" tabClosingPolicy="UNAVAILABLE" styleClass="tab-pane">
 
             <!-- Eredménykimutatás -->
             <Tab text="Eredménykimutatás">
@@ -37,13 +37,15 @@
                     <padding>
                         <Insets top="15" right="15" bottom="15" left="15"/>
                     </padding>
-                    <TableView fx:id="incomeStatementTable" prefHeight="300">
+                    <TableView fx:id="incomeStatementTable" prefHeight="300" editable="false" >
                         <columns>
-                            <TableColumn text="Kategória" fx:id="incomeCategoryColumn" prefWidth="200"/>
-                            <TableColumn text="Összeg (Ft)" fx:id="incomeAmountColumn" prefWidth="150"/>
+                            <TableColumn text="Projekt" fx:id="incomeProjectColumn" prefWidth="150" />
+                            <TableColumn text="Típus" fx:id="incomeTypeColumn" prefWidth="100" />
+                            <TableColumn text="Kategória" fx:id="incomeCategoryColumn" prefWidth="200" />
+                            <TableColumn text="Összeg (Ft)" fx:id="incomeAmountColumn" prefWidth="150" />
                         </columns>
                     </TableView>
-                    <Label fx:id="netProfitLabel" text="Nettó eredmény: " style="-fx-font-size: 16; -fx-font-weight: bold;"/>
+                    <Label fx:id="netProfitLabel" text="Nettó eredmény:" styleClass="highlight-label"/>
                 </VBox>
             </Tab>
 
@@ -54,7 +56,7 @@
                         <Insets top="15" right="15" bottom="15" left="15"/>
                     </padding>
                     <Label text="Eszközök és források összesítése"/>
-                    <TableView fx:id="balanceSheetTable">
+                    <TableView fx:id="balanceSheetTable" editable="false">
                         <columns>
                             <TableColumn text="Tétel" fx:id="balanceItemColumn" prefWidth="200"/>
                             <TableColumn text="Összeg (Ft)" fx:id="balanceAmountColumn" prefWidth="150"/>
@@ -69,7 +71,7 @@
                     <padding>
                         <Insets top="15" right="15" bottom="15" left="15"/>
                     </padding>
-                    <TableView fx:id="cashFlowTable">
+                    <TableView fx:id="cashFlowTable" editable="false">
                         <columns>
                             <TableColumn text="Tevékenység" fx:id="cashActivityColumn" prefWidth="200"/>
                             <TableColumn text="Összeg (Ft)" fx:id="cashAmountColumn" prefWidth="150"/>
@@ -85,7 +87,7 @@
                         <Insets top="15" right="15" bottom="15" left="15"/>
                     </padding>
                     <Label text="Bevétel / Kiadás trend (hónapok szerint)"/>
-                    <LineChart fx:id="lineChart" title="Időszaki trend">
+                    <LineChart fx:id="profitTrendChart" title="Időszaki trend" animated="false">
                         <xAxis>
                             <CategoryAxis label="Hónapok"/>
                         </xAxis>
@@ -95,22 +97,30 @@
                     </LineChart>
 
                     <Label text="Költségeloszlás kategóriák szerint"/>
-                    <PieChart fx:id="expensePieChart"/>
+                    <PieChart fx:id="expenseBreakdownChart" legendVisible="true"/>
                 </VBox>
             </Tab>
 
         </TabPane>
     </center>
 
-    <!-- Alsó rész: Export és Összegzés -->
+    <!-- Alsó rész -->
     <bottom>
-        <HBox spacing="15" style="-fx-background-color: #e0e0e0;" alignment="CENTER_RIGHT">
+        <HBox spacing="15" alignment="CENTER_RIGHT" styleClass="bottom-bar">
             <padding>
                 <Insets top="10" right="10" bottom="10" left="10"/>
             </padding>
             <Label fx:id="summaryLabel" text="Összes bevétel: 0 Ft | Összes kiadás: 0 Ft"/>
-            <Button text="Export PDF" onAction="#onExportPdf"/>
-            <Button text="Export Excel" onAction="#onExportExcel"/>
+            <Button text="Export PDF" onAction="#onExportPdf" styleClass="secondary-button">
+                <tooltip>
+                    <Tooltip text="Exportálás PDF formátumban"/>
+                </tooltip>
+            </Button>
+            <Button text="Export Excel" onAction="#onExportExcel" styleClass="secondary-button">
+                <tooltip>
+                    <Tooltip text="Exportálás Excel formátumban"/>
+                </tooltip>
+            </Button>
         </HBox>
     </bottom>
 

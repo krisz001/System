@@ -7,45 +7,77 @@ import java.sql.Statement;
 import java.sql.SQLException;
 
 public class Database {
-    private static final String URL = "jdbc:mysql://localhost:3306/trinexon"; // Az adatbázis URL-je
-    private static final String USER = "root"; // A felhasználó neve
-    private static final String PASSWORD = "KrisztiaN12"; // A felhasználó jelszava
 
-    // Kapcsolat létrehozása
-    public static Connection connect() {
+    private static final String URL = "jdbc:mysql://localhost:3306/trinexon";
+    private static final String USER = "root";
+    private static final String PASSWORD = "KrisztiaN12";
+
+    static {
         try {
-            // Csatlakozás a MySQL adatbázishoz
-            Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
-            System.out.println("Sikeres kapcsolódás az adatbázishoz!");
-            return conn;
-        } catch (SQLException e) {
-            System.err.println("Hiba az adatbázishoz való kapcsolódás során: " + e.getMessage());
-            return null;
+            // Régebbi JDBC verzióknál kellhet a driver regisztráció
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            System.err.println("MySQL driver nem található: " + e.getMessage());
         }
     }
 
-    // Lekérdezés futtatása
-    public static void queryDatabase(String query) {
-        Connection conn = connect();  // Kapcsolódás létrehozása
+    public static Connection connect() throws SQLException {
+        return DriverManager.getConnection(URL, USER, PASSWORD);
+    }
 
-        if (conn != null) {
-            try (Statement stmt = conn.createStatement()) {
-                // SQL lekérdezés futtatása
-                ResultSet rs = stmt.executeQuery(query);
+    /**
+     * Lekérdezés futtatása, és a ResultSet feldolgozása a processor lambda segítségével.
+     * A kapcsolat, statement és resultset automatikusan bezáródik.
+     *
+     * @param query SQL SELECT lekérdezés
+     * @param processor A ResultSet-et feldolgozó funkció
+     */
+    public static void executeQuery(String query, ResultSetProcessor processor) {
+        try (Connection conn = connect();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
 
-                // Eredmények kiíratása
-                while (rs.next()) {
-                    System.out.println("Eredmény: " + rs.getString(1));  // Kiírjuk az első oszlopot
-                }
-            } catch (SQLException e) {
-                System.err.println("Hiba a lekérdezés futtatása során: " + e.getMessage());
-            } finally {
-                try {
-                    conn.close();  // Kapcsolat lezárása
-                } catch (SQLException e) {
-                    System.err.println("Hiba a kapcsolat lezárása során: " + e.getMessage());
-                }
-            }
+            processor.process(rs);
+
+        } catch (SQLException e) {
+            System.err.println("Hiba a lekérdezés futtatása során: " + e.getMessage());
         }
+    }
+
+    /**
+     * Adatmódosító műveletek (INSERT, UPDATE, DELETE) futtatása.
+     * Visszaadja az érintett sorok számát.
+     *
+     * @param sql SQL utasítás
+     * @return érintett sorok száma, vagy -1 hiba esetén
+     */
+    public static int executeUpdate(String sql) {
+        try (Connection conn = connect();
+             Statement stmt = conn.createStatement()) {
+
+            return stmt.executeUpdate(sql);
+
+        } catch (SQLException e) {
+            System.err.println("Hiba az adatmódosítás során: " + e.getMessage());
+            return -1;
+        }
+    }
+
+    /**
+     * Egyszerű lekérdezés konzolra írással, főként teszteléshez.
+     *
+     * @param query SQL SELECT lekérdezés
+     */
+    public static void queryDatabase(String query) {
+        executeQuery(query, rs -> {
+            while (rs.next()) {
+                System.out.println("Eredmény: " + rs.getString(1));
+            }
+        });
+    }
+
+    @FunctionalInterface
+    public interface ResultSetProcessor {
+        void process(ResultSet rs) throws SQLException;
     }
 }
