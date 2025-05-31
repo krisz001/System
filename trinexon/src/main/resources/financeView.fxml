@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="System.trinexon.FinanceController">
+    
+    <!-- Felső rész: Szűrési lehetőségek -->
+    <top>
+        <HBox spacing="10" style="-fx-background-color: #f0f0f0;">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+            <Label text="Időszak:"/>
+            <DatePicker fx:id="fromDatePicker" promptText="Kezdő dátum"/>
+            <DatePicker fx:id="toDatePicker" promptText="Végdátum"/>
+
+            <Label text="Kategória:"/>
+            <ComboBox fx:id="categoryComboBox" prefWidth="150"/>
+
+            <Label text="Projekt:"/>
+            <ComboBox fx:id="projectComboBox" prefWidth="150"/>
+
+            <Button text="Szűrés" onAction="#onFilter"/>
+        </HBox>
+    </top>
+
+    <!-- Középső rész: Tartalom -->
+    <center>
+        <TabPane fx:id="financeTabPane" tabClosingPolicy="UNAVAILABLE">
+
+            <!-- Eredménykimutatás -->
+            <Tab text="Eredménykimutatás">
+                <VBox spacing="10">
+                    <padding>
+                        <Insets top="15" right="15" bottom="15" left="15"/>
+                    </padding>
+                    <TableView fx:id="incomeStatementTable" prefHeight="300">
+                        <columns>
+                            <TableColumn text="Kategória" fx:id="incomeCategoryColumn" prefWidth="200"/>
+                            <TableColumn text="Összeg (Ft)" fx:id="incomeAmountColumn" prefWidth="150"/>
+                        </columns>
+                    </TableView>
+                    <Label fx:id="netProfitLabel" text="Nettó eredmény: " style="-fx-font-size: 16; -fx-font-weight: bold;"/>
+                </VBox>
+            </Tab>
+
+            <!-- Mérleg -->
+            <Tab text="Mérleg">
+                <VBox spacing="10">
+                    <padding>
+                        <Insets top="15" right="15" bottom="15" left="15"/>
+                    </padding>
+                    <Label text="Eszközök és források összesítése"/>
+                    <TableView fx:id="balanceSheetTable">
+                        <columns>
+                            <TableColumn text="Tétel" fx:id="balanceItemColumn" prefWidth="200"/>
+                            <TableColumn text="Összeg (Ft)" fx:id="balanceAmountColumn" prefWidth="150"/>
+                        </columns>
+                    </TableView>
+                </VBox>
+            </Tab>
+
+            <!-- Cash Flow -->
+            <Tab text="Cash Flow">
+                <VBox spacing="10">
+                    <padding>
+                        <Insets top="15" right="15" bottom="15" left="15"/>
+                    </padding>
+                    <TableView fx:id="cashFlowTable">
+                        <columns>
+                            <TableColumn text="Tevékenység" fx:id="cashActivityColumn" prefWidth="200"/>
+                            <TableColumn text="Összeg (Ft)" fx:id="cashAmountColumn" prefWidth="150"/>
+                        </columns>
+                    </TableView>
+                </VBox>
+            </Tab>
+
+            <!-- Diagramok -->
+            <Tab text="Diagramok">
+                <VBox spacing="10">
+                    <padding>
+                        <Insets top="15" right="15" bottom="15" left="15"/>
+                    </padding>
+                    <Label text="Bevétel / Kiadás trend (hónapok szerint)"/>
+                    <LineChart fx:id="lineChart" title="Időszaki trend">
+                        <xAxis>
+                            <CategoryAxis label="Hónapok"/>
+                        </xAxis>
+                        <yAxis>
+                            <NumberAxis label="Összeg (Ft)"/>
+                        </yAxis>
+                    </LineChart>
+
+                    <Label text="Költségeloszlás kategóriák szerint"/>
+                    <PieChart fx:id="expensePieChart"/>
+                </VBox>
+            </Tab>
+
+        </TabPane>
+    </center>
+
+    <!-- Alsó rész: Export és Összegzés -->
+    <bottom>
+        <HBox spacing="15" style="-fx-background-color: #e0e0e0;" alignment="CENTER_RIGHT">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+            <Label fx:id="summaryLabel" text="Összes bevétel: 0 Ft | Összes kiadás: 0 Ft"/>
+            <Button text="Export PDF" onAction="#onExportPdf"/>
+            <Button text="Export Excel" onAction="#onExportExcel"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>
