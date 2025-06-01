@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane prefHeight="900" prefWidth="1280" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="System.trinexon.ProjectController">
+
+    <!-- Top toolbar -->
+    <top>
+        <ToolBar style="-fx-background-color: #2c3e50;">
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <padding>
+                    <Insets bottom="5" left="5" right="5" top="5" />
+                </padding>
+                <Label style="-fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold;" text="Projektkezelő" />
+                <Region HBox.hgrow="ALWAYS" />
+                <TextField fx:id="searchField" promptText="Keresés projektek között..." style="-fx-background-radius: 15; -fx-padding: 6 12;" />
+                <Button fx:id="btnAddProject" onAction="#handleAddProject" style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-background-radius: 15;" text="Keresés" />
+            </HBox>
+        </ToolBar>
+    </top>
+
+    <!-- Center: Projektek listája és részletek -->
+    <center>
+        <SplitPane dividerPositions="0.55">
+            <!-- Projektek táblázata -->
+            <TableView fx:id="projectTable" prefWidth="700" style="-fx-background-color: white;">
+                <columns>
+                    <TableColumn fx:id="colName" prefWidth="200" text="Név" />
+                    <TableColumn fx:id="colStartDate" prefWidth="120" text="Kezdés dátuma" />
+                    <TableColumn fx:id="colEndDate" prefWidth="120" text="Befejezés dátuma" />
+                    <TableColumn fx:id="colStatus" prefWidth="120" text="Állapot" />
+                    <TableColumn fx:id="colManager" prefWidth="140" text="Projektvezető" />
+                    <TableColumn fx:id="colBudget" prefWidth="100" text="Költségvetés" />
+                </columns>
+            </TableView>
+
+            <!-- Projekt részletek panel -->
+            <VBox spacing="15" style="-fx-background-color: #ecf0f1;">
+                <padding>
+                    <Insets bottom="20" left="20" right="20" top="20" />
+                </padding>
+                <Label style="-fx-font-size: 18; -fx-font-weight: bold;" text="Projekt részletek" />
+                
+                <GridPane hgap="10" vgap="10">
+                    <Label text="Név:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                    <TextField fx:id="detailName" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                    
+                    <Label text="Leírás:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                    <TextArea fx:id="detailDescription" prefRowCount="4" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                    
+                    <Label text="Kezdés dátuma:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                    <DatePicker fx:id="detailStartDate" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                    
+                    <Label text="Befejezés dátuma:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                    <DatePicker fx:id="detailEndDate" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                    
+                    <Label text="Állapot:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+                    <ComboBox fx:id="detailStatus" prefWidth="150" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                    
+                    <Label text="Projektvezető:" GridPane.columnIndex="0" GridPane.rowIndex="5" />
+                    <TextField fx:id="detailManager" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                    
+                    <Label text="Költségvetés:" GridPane.columnIndex="0" GridPane.rowIndex="6" />
+                    <TextField fx:id="detailBudget" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+               <columnConstraints>
+                  <ColumnConstraints />
+                  <ColumnConstraints />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints />
+                  <RowConstraints />
+                  <RowConstraints />
+                  <RowConstraints />
+                  <RowConstraints />
+                  <RowConstraints />
+                  <RowConstraints />
+               </rowConstraints>
+                </GridPane>
+
+                <HBox alignment="CENTER_RIGHT" spacing="20">
+                    <padding>
+                        <Insets bottom="0" left="0" right="0" top="10" />
+                    </padding>
+                    <Button fx:id="btnSaveProject" onAction="#handleSaveProject" style="-fx-background-color: #2980b9; -fx-text-fill: white; -fx-background-radius: 10;" text="Mentés" />
+                    <Button fx:id="btnDeleteProject" onAction="#handleDeleteProject" style="-fx-background-color: #c0392b; -fx-text-fill: white; -fx-background-radius: 10;" text="Törlés" />
+                </HBox>
+            </VBox>
+        </SplitPane>
+    </center>
+
+    <!-- Bottom státusz sáv -->
+    <bottom>
+        <HBox alignment="CENTER_LEFT" style="-fx-background-color: #34495e;">
+            <padding>
+                <Insets bottom="5" left="5" right="5" top="5" />
+            </padding>
+            <Label fx:id="statusLabel" style="-fx-text-fill: white;" text="Készen áll..." />
+        </HBox>
+    </bottom>
+
+</BorderPane>

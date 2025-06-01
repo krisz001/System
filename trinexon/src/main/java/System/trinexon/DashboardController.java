@@ -22,6 +22,9 @@ public class DashboardController {
     @FXML
     private ImageView budgetImage;
 
+    @FXML
+    private ImageView githubImage;  // Új ImageView a GitHub képhez
+
     public void setUsername(String username) {
         if (felLabel != null) {
             felLabel.setText("Bejelentkezett: " + username);
@@ -30,13 +33,7 @@ public class DashboardController {
 
     @FXML
     public void initialize() {
-        if (teamImage != null) {
-            teamImage.setOnMouseClicked(this::openWorkerWindow);
-        }
-
-        if (budgetImage != null) {
-            budgetImage.setOnMouseClicked(this::openFinanceWindow);
-        }
+        // Mivel az onMouseClicked eseményeket FXML-ben állítottad be, nincs szükség itt explicit listenerekre.
     }
 
     @FXML
@@ -63,6 +60,23 @@ public class DashboardController {
 
             Stage stage = new Stage();
             stage.setTitle("Pénzügyi Kimutatások");
+            stage.setScene(new Scene(root));
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    // Új metódus a GitHub kép kattintás kezelésére
+    @FXML
+    public void openProjectWindow(MouseEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ProjectsOverview.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = new Stage();
+            stage.setTitle("Projektek áttekintése");
             stage.setScene(new Scene(root));
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.showAndWait();
