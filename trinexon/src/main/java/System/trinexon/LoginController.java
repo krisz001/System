@@ -39,6 +39,7 @@ public class LoginController {
             showAlert(AlertType.INFORMATION, "Sikeres belépés", "Üdvözöllek, " + username + "!");
             openDashboard(username);
         } else {
+            passwordField.clear();  // Jelszómező törlése sikertelen bejelentkezés után
             showAlert(AlertType.ERROR, "Sikertelen belépés", "Hibás felhasználónév vagy jelszó!");
         }
     }
@@ -57,7 +58,7 @@ public class LoginController {
             stage.setTitle("Dashboard");
             stage.setScene(scene);
 
-            // Méretet beállítjuk az FXML-ben megadott méretre
+            // Méret beállítása az FXML-ben megadott méretre
             double width = root.getPrefWidth();
             double height = root.getPrefHeight();
 
@@ -69,6 +70,10 @@ public class LoginController {
             stage.setMaxHeight(height);
 
             stage.show();
+
+            // Bejelentkező ablak bezárása
+            Stage currentStage = (Stage) usernameField.getScene().getWindow();
+            currentStage.close();
 
         } catch (IOException e) {
             System.err.println("Hiba történt a Dashboard betöltésekor:");
@@ -90,9 +95,11 @@ public class LoginController {
                 String storedPassword = rs.getString("password");
 
                 if (storedPassword != null) {
+                    // Ha bcrypt hash van tárolva, ellenőrzés BCrypt-tal
                     if (storedPassword.startsWith("$2a$") || storedPassword.startsWith("$2b$") || storedPassword.startsWith("$2y$")) {
                         return BCrypt.checkpw(password, storedPassword);
                     } else {
+                        // Ha sima szöveg, közvetlen összehasonlítás (javasolt csak átmenetileg)
                         return password.equals(storedPassword);
                     }
                 }

@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.chart.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.geometry.Insets?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml"
-            xmlns="http://javafx.com/javafx"
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
             fx:controller="System.trinexon.FinanceController"
             stylesheets="@css/finance.css">
 
     <!-- Felső rész: Szűrés -->
     <top>
-        <HBox spacing="10" fx:id="filterBar" styleClass="top-bar">
+        <HBox spacing="10" fx:id="filterBar" styleClass="top-bar" alignment="CENTER_LEFT">
             <padding>
                 <Insets top="10" right="10" bottom="10" left="10"/>
             </padding>
@@ -24,10 +24,11 @@
             <Label text="Projekt:"/>
             <ComboBox fx:id="projectComboBox" prefWidth="150" promptText="Válassz projektet"/>
             <Button text="Szűrés" onAction="#onFilter" styleClass="primary-button"/>
+            <Button text="Frissítés" onAction="#onRefresh" styleClass="secondary-button"/>
         </HBox>
     </top>
 
-    <!-- Középső rész -->
+    <!-- Középső rész: TabPane -->
     <center>
         <TabPane fx:id="financeTabPane" tabClosingPolicy="UNAVAILABLE" styleClass="tab-pane">
 
@@ -37,12 +38,12 @@
                     <padding>
                         <Insets top="15" right="15" bottom="15" left="15"/>
                     </padding>
-                    <TableView fx:id="incomeStatementTable" prefHeight="300" editable="false" >
+                    <TableView fx:id="incomeStatementTable" prefHeight="300" editable="false">
                         <columns>
-                            <TableColumn text="Projekt" fx:id="incomeProjectColumn" prefWidth="150" />
-                            <TableColumn text="Típus" fx:id="incomeTypeColumn" prefWidth="100" />
-                            <TableColumn text="Kategória" fx:id="incomeCategoryColumn" prefWidth="200" />
-                            <TableColumn text="Összeg (Ft)" fx:id="incomeAmountColumn" prefWidth="150" />
+                            <TableColumn fx:id="incomeProjectColumn" text="Projekt" prefWidth="150"/>
+                            <TableColumn fx:id="incomeTypeColumn" text="Típus" prefWidth="100"/>
+                            <TableColumn fx:id="incomeCategoryColumn" text="Kategória" prefWidth="200"/>
+                            <TableColumn fx:id="incomeAmountColumn" text="Összeg (Ft)" prefWidth="150"/>
                         </columns>
                     </TableView>
                     <Label fx:id="netProfitLabel" text="Nettó eredmény:" styleClass="highlight-label"/>
@@ -58,8 +59,8 @@
                     <Label text="Eszközök és források összesítése"/>
                     <TableView fx:id="balanceSheetTable" editable="false">
                         <columns>
-                            <TableColumn text="Tétel" fx:id="balanceItemColumn" prefWidth="200"/>
-                            <TableColumn text="Összeg (Ft)" fx:id="balanceAmountColumn" prefWidth="150"/>
+                            <TableColumn fx:id="balanceItemColumn" text="Tétel" prefWidth="200"/>
+                            <TableColumn fx:id="balanceAmountColumn" text="Összeg (Ft)" prefWidth="150"/>
                         </columns>
                     </TableView>
                 </VBox>
@@ -73,8 +74,8 @@
                     </padding>
                     <TableView fx:id="cashFlowTable" editable="false">
                         <columns>
-                            <TableColumn text="Tevékenység" fx:id="cashActivityColumn" prefWidth="200"/>
-                            <TableColumn text="Összeg (Ft)" fx:id="cashAmountColumn" prefWidth="150"/>
+                            <TableColumn fx:id="cashActivityColumn" text="Tevékenység" prefWidth="200"/>
+                            <TableColumn fx:id="cashAmountColumn" text="Összeg (Ft)" prefWidth="150"/>
                         </columns>
                     </TableView>
                 </VBox>
@@ -82,12 +83,14 @@
 
             <!-- Diagramok -->
             <Tab text="Diagramok">
-                <VBox spacing="10">
+                <VBox spacing="20">
                     <padding>
                         <Insets top="15" right="15" bottom="15" left="15"/>
                     </padding>
-                    <Label text="Bevétel / Kiadás trend (hónapok szerint)"/>
-                    <LineChart fx:id="profitTrendChart" title="Időszaki trend" animated="false">
+
+                    <!-- Bevétel/Kiadás trend -->
+                    <Label text="Bevétel / Kiadás trend (hónapok szerint)" styleClass="section-label"/>
+                    <LineChart fx:id="profitTrendChart" title="Időszaki trend" animated="false" prefHeight="300">
                         <xAxis>
                             <CategoryAxis label="Hónapok"/>
                         </xAxis>
@@ -96,15 +99,16 @@
                         </yAxis>
                     </LineChart>
 
-                    <Label text="Költségeloszlás kategóriák szerint"/>
-                    <PieChart fx:id="expenseBreakdownChart" legendVisible="true"/>
+                    <!-- Költségeloszlás -->
+                    <Label text="Költségeloszlás kategóriák szerint" styleClass="section-label"/>
+                    <PieChart fx:id="expenseBreakdownChart" legendVisible="true" labelsVisible="true" prefHeight="300"/>
                 </VBox>
             </Tab>
 
         </TabPane>
     </center>
 
-    <!-- Alsó rész -->
+    <!-- Alsó rész: Exportálás -->
     <bottom>
         <HBox spacing="15" alignment="CENTER_RIGHT" styleClass="bottom-bar">
             <padding>

@@ -1,6 +1,7 @@
 package System.trinexon;
 
 import java.io.IOException;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -33,55 +34,47 @@ public class DashboardController {
 
     @FXML
     public void initialize() {
-        // Mivel az onMouseClicked eseményeket FXML-ben állítottad be, nincs szükség itt explicit listenerekre.
+        // Az onMouseClicked események FXML-ben vannak, ezért itt nem kell listenert beállítani
     }
 
     @FXML
     public void openWorkerWindow(MouseEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/workerView.fxml"));
-            Parent root = loader.load();
-
-            Stage stage = new Stage();
-            stage.setTitle("Munkavállalói nyilvántartás");
-            stage.setScene(new Scene(root));
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.showAndWait();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        openModalWindow("/workerView.fxml", "Munkavállalói nyilvántartás");
     }
 
     @FXML
     public void openFinanceWindow(MouseEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/FinanceView.fxml"));
-            Parent root = loader.load();
-
-            Stage stage = new Stage();
-            stage.setTitle("Pénzügyi Kimutatások");
-            stage.setScene(new Scene(root));
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.showAndWait();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        openModalWindow("/FinanceView.fxml", "Pénzügyi Kimutatások");
     }
-    
-    // Új metódus a GitHub kép kattintás kezelésére
+
     @FXML
     public void openProjectWindow(MouseEvent event) {
+        openModalWindow("/ProjectsOverview.fxml", "Projektek áttekintése");
+    }
+
+    /**
+     * Segédmetódus modális ablak megnyitásához.
+     * 
+     * @param fxmlPath Az FXML fájl elérési útja
+     * @param title Az ablak címe
+     */
+    private void openModalWindow(String fxmlPath, String title) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ProjectsOverview.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Parent root = loader.load();
 
             Stage stage = new Stage();
-            stage.setTitle("Projektek áttekintése");
+            stage.setTitle(title);
             stage.setScene(new Scene(root));
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.showAndWait();
+
         } catch (IOException e) {
             e.printStackTrace();
+            // Érdemes UI értesítést is megjeleníteni, ha kell
+            Platform.runLater(() -> {
+                // pl. alert vagy log üzenet, ha van UI elem erre
+            });
         }
     }
 }

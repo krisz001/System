@@ -6,6 +6,13 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.SQLException;
 
+import javafx.concurrent.Task;
+
+/**
+ * Database osztály adatbázis műveletekhez.
+ * Az adatbázis műveletek blokkolhatják a UI-t, ezért
+ * háttérszálon történő futtatásukat javasoljuk.
+ */
 public class Database {
 
     private static final String URL = "jdbc:mysql://localhost:3306/trinexon";
@@ -26,8 +33,7 @@ public class Database {
     }
 
     /**
-     * Lekérdezés futtatása, és a ResultSet feldolgozása a processor lambda segítségével.
-     * A kapcsolat, statement és resultset automatikusan bezáródik.
+     * Lekérdezés futtatása szinkron módon (blokkoló).
      *
      * @param query SQL SELECT lekérdezés
      * @param processor A ResultSet-et feldolgozó funkció
@@ -45,8 +51,7 @@ public class Database {
     }
 
     /**
-     * Adatmódosító műveletek (INSERT, UPDATE, DELETE) futtatása.
-     * Visszaadja az érintett sorok számát.
+     * Adatmódosító műveletek (INSERT, UPDATE, DELETE) futtatása szinkron módon.
      *
      * @param sql SQL utasítás
      * @return érintett sorok száma, vagy -1 hiba esetén
@@ -74,6 +79,37 @@ public class Database {
                 System.out.println("Eredmény: " + rs.getString(1));
             }
         });
+    }
+
+    /**
+     * Háttérszálon futtat egy lekérdezést Task segítségével,
+     * hogy ne blokkolja a UI szálat.
+     * 
+     * Példa használatra:
+     * Database.executeQueryAsync("SELECT * FROM users", rs -> {
+     *     // feldolgozás UI szálon, pl Platform.runLater-ben
+     * });
+     *
+     * @param query SQL SELECT lekérdezés
+     * @param processor ResultSet feldolgozó
+     * @return Task objektum, amin beállíthatók callback-ek
+     */
+    public static Task<Void> executeQueryAsync(String query, ResultSetProcessor processor) {
+        Task<Void> task = new Task<>() {
+            @Override
+            protected Void call() throws Exception {
+                try (Connection conn = connect();
+                     Statement stmt = conn.createStatement();
+                     ResultSet rs = stmt.executeQuery(query)) {
+
+                    processor.process(rs);
+
+                }
+                return null;
+            }
+        };
+        new Thread(task).start();
+        return task;
     }
 
     @FunctionalInterface

@@ -2,6 +2,7 @@ package System.trinexon;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.PieChart;
@@ -23,11 +24,11 @@ public class FinanceController {
     @FXML private ComboBox<String> categoryComboBox;
     @FXML private ComboBox<String> projectComboBox;
 
-    @FXML private TableView<IncomeRecord> incomeStatementTable;
-    @FXML private TableColumn<IncomeRecord, String> incomeProjectColumn;
-    @FXML private TableColumn<IncomeRecord, String> incomeTypeColumn;
-    @FXML private TableColumn<IncomeRecord, String> incomeCategoryColumn;
-    @FXML private TableColumn<IncomeRecord, Double> incomeAmountColumn;
+    @FXML private TableView<FinanceRecord> incomeStatementTable;
+    @FXML private TableColumn<FinanceRecord, String> incomeProjectColumn;
+    @FXML private TableColumn<FinanceRecord, String> incomeTypeColumn;
+    @FXML private TableColumn<FinanceRecord, String> incomeCategoryColumn;
+    @FXML private TableColumn<FinanceRecord, Double> incomeAmountColumn;
 
     @FXML private Label netProfitLabel;
     @FXML private Label summaryLabel;
@@ -52,188 +53,217 @@ public class FinanceController {
         ObservableList<String> categories = FXCollections.observableArrayList();
         ObservableList<String> projects = FXCollections.observableArrayList();
 
-        String catQuery = "SELECT DISTINCT category FROM expenses ORDER BY category";
-        String projQuery = "SELECT DISTINCT project_name FROM projects ORDER BY project_name";
-
-        try (Connection conn = Database.connect();
-             Statement stmt = conn.createStatement()) {
-
-            try (ResultSet rsCat = stmt.executeQuery(catQuery)) {
+        try (Connection conn = Database.connect()) {
+            try (Statement stmt = conn.createStatement()) {
+                ResultSet rsCat = stmt.executeQuery("SELECT DISTINCT category FROM expenses ORDER BY category");
                 while (rsCat.next()) {
                     categories.add(rsCat.getString("category"));
                 }
-            }
 
-            try (ResultSet rsProj = stmt.executeQuery(projQuery)) {
+                ResultSet rsProj = stmt.executeQuery("SELECT DISTINCT project_name FROM projects ORDER BY project_name");
                 while (rsProj.next()) {
                     projects.add(rsProj.getString("project_name"));
                 }
             }
 
-            categoryComboBox.getItems().clear();
-            projectComboBox.getItems().clear();
-
-            categoryComboBox.getItems().add("Összes kategória");
+            categoryComboBox.setItems(FXCollections.observableArrayList("Összes kategória"));
             categoryComboBox.getItems().addAll(categories);
-
-            projectComboBox.getItems().add("Összes projekt");
-            projectComboBox.getItems().addAll(projects);
-
             categoryComboBox.getSelectionModel().selectFirst();
+
+            projectComboBox.setItems(FXCollections.observableArrayList("Összes projekt"));
+            projectComboBox.getItems().addAll(projects);
             projectComboBox.getSelectionModel().selectFirst();
 
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Hiba a kategóriák vagy projektek betöltésekor", e);
+            LOGGER.log(Level.SEVERE, "Hiba a ComboBox adatok betöltésekor", e);
         }
-    }
-
-    @FXML
-    private void onFilter() {
-        loadData();
     }
 
     private void loadData() {
-        LocalDate from = fromDatePicker.getValue();
-        LocalDate to = toDatePicker.getValue();
+        LocalDate from = fromDatePicker.getValue() != null ? fromDatePicker.getValue() : LocalDate.now().minusMonths(1);
+        LocalDate to = toDatePicker.getValue() != null ? toDatePicker.getValue() : LocalDate.now();
+        fromDatePicker.setValue(from);
+        toDatePicker.setValue(to);
 
-        if (from == null) {
-            from = LocalDate.now().minusMonths(1);
-            fromDatePicker.setValue(from);
-        }
-        if (to == null) {
-            to = LocalDate.now();
-            toDatePicker.setValue(to);
-        }
+        String category = categoryComboBox.getValue();
+        String project = projectComboBox.getValue();
 
-        String selectedCategory = categoryComboBox.getSelectionModel().getSelectedItem();
-        String selectedProject = projectComboBox.getSelectionModel().getSelectedItem();
+        ObservableList<FinanceRecord> records = FXCollections.observableArrayList();
+        double totalIncome = 0;
+        double totalExpense = 0;
 
-        loadIncomeStatement(from, to, selectedCategory, selectedProject);
-        updateNetProfit();
-        updateCharts(from, to, selectedCategory, selectedProject);
-        updateSummaryLabel(from, to, selectedCategory, selectedProject);
-    }
+        String revenueQuery = """
+            SELECT p.project_name AS project, 'Bevétel' AS type, c.category_name AS category, SUM(r.amount) AS amount
+            FROM revenues r
+            JOIN projects p ON r.project_id = p.id
+            JOIN categories c ON r.category_id = c.id
+            WHERE r.date BETWEEN ? AND ?
+            """ + (category != null && !category.equals("Összes kategória") ? "AND c.category_name = ? " : "") +
+                (project != null && !project.equals("Összes projekt") ? "AND p.project_name = ? " : "") +
+                "GROUP BY p.project_name, c.category_name";
 
-    private void loadIncomeStatement(LocalDate from, LocalDate to, String category, String project) {
-        ObservableList<IncomeRecord> data = FXCollections.observableArrayList();
+        String expenseQuery = """
+            SELECT p.project_name AS project, 'Kiadás' AS type, e.category AS category, SUM(e.amount) AS amount
+            FROM expenses e
+            JOIN projects p ON e.project_id = p.id
+            WHERE e.date BETWEEN ? AND ?
+            """ + (category != null && !category.equals("Összes kategória") ? "AND e.category = ? " : "") +
+                (project != null && !project.equals("Összes projekt") ? "AND p.project_name = ? " : "") +
+                "GROUP BY p.project_name, e.category";
 
-        StringBuilder query = new StringBuilder("SELECT p.project_name AS project, 'Bevétel' AS type, c.category_name AS category, SUM(r.amount) AS amount " +
-                "FROM revenues r " +
-                "JOIN projects p ON r.project_id = p.id " +
-                "JOIN categories c ON r.category_id = c.id " +
-                "WHERE r.date BETWEEN ? AND ? ");
+        try (Connection conn = Database.connect()) {
 
-        if (category != null && !category.equals("Összes kategória")) {
-            query.append("AND c.category_name = ? ");
-        }
-        if (project != null && !project.equals("Összes projekt")) {
-            query.append("AND p.project_name = ? ");
-        }
-        query.append("GROUP BY p.project_name, c.category_name ");
-
-        try (Connection conn = Database.connect();
-             PreparedStatement ps = conn.prepareStatement(query.toString())) {
-
-            ps.setDate(1, Date.valueOf(from));
-            ps.setDate(2, Date.valueOf(to));
-
-            int paramIndex = 3;
-            if (category != null && !category.equals("Összes kategória")) {
-                ps.setString(paramIndex++, category);
-            }
-            if (project != null && !project.equals("Összes projekt")) {
-                ps.setString(paramIndex, project);
+            try (PreparedStatement ps = conn.prepareStatement(revenueQuery)) {
+                setQueryParams(ps, from, to, category, project);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        double amount = rs.getDouble("amount");
+                        totalIncome += amount;
+                        records.add(new FinanceRecord(rs.getString("project"), "Bevétel", rs.getString("category"), amount));
+                    }
+                }
             }
 
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) {
-                data.add(new IncomeRecord(
-                        rs.getString("project"),
-                        rs.getString("type"),
-                        rs.getString("category"),
-                        rs.getDouble("amount")
-                ));
+            try (PreparedStatement ps = conn.prepareStatement(expenseQuery)) {
+                setQueryParams(ps, from, to, category, project);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        double amount = rs.getDouble("amount");
+                        totalExpense += amount;
+                        records.add(new FinanceRecord(rs.getString("project"), "Kiadás", rs.getString("category"), amount));
+                    }
+                }
             }
 
-            incomeStatementTable.setItems(data);
+            incomeStatementTable.setItems(records);
+            netProfitLabel.setText(String.format("Nettó eredmény: %.0f Ft", totalIncome - totalExpense));
+            summaryLabel.setText(String.format("Összes bevétel: %.0f Ft | Összes kiadás: %.0f Ft", totalIncome, totalExpense));
+
+            updateProfitTrendChart(from, to, category, project);
+            updateExpenseBreakdownChart(from, to, category, project);
 
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Hiba az eredménykimutatás betöltésekor", e);
+            LOGGER.log(Level.SEVERE, "Hiba az adatok betöltésekor", e);
         }
     }
 
-    private void updateNetProfit() {
-        double totalIncome = 0;
-        for (IncomeRecord rec : incomeStatementTable.getItems()) {
-            if (rec.getType().equals("Bevétel")) {
-                totalIncome += rec.getAmount();
-            }
+    private void setQueryParams(PreparedStatement ps, LocalDate from, LocalDate to, String category, String project) throws SQLException {
+        ps.setDate(1, Date.valueOf(from));
+        ps.setDate(2, Date.valueOf(to));
+        int index = 3;
+        if (category != null && !category.equals("Összes kategória")) {
+            ps.setString(index++, category);
         }
-        // Hasonlóan a kiadások, például később lehet bővíteni
-
-        netProfitLabel.setText(String.format("Nettó eredmény: %.0f Ft", totalIncome)); 
-    }
-
-    private void updateCharts(LocalDate from, LocalDate to, String category, String project) {
-        updateProfitTrendChart(from, to, category, project);
-        updateExpenseBreakdownChart(from, to, category, project);
+        if (project != null && !project.equals("Összes projekt")) {
+            ps.setString(index, project);
+        }
     }
 
     private void updateProfitTrendChart(LocalDate from, LocalDate to, String category, String project) {
         profitTrendChart.getData().clear();
+        XYChart.Series<String, Number> revenueSeries = new XYChart.Series<>();
+        revenueSeries.setName("Havi bevétel");
 
-        XYChart.Series<String, Number> incomeSeries = new XYChart.Series<>();
-        incomeSeries.setName("Bevétel");
+        String query = """
+            SELECT strftime('%Y-%m', r.date) AS month, SUM(r.amount) AS total
+            FROM revenues r
+            JOIN projects p ON r.project_id = p.id
+            JOIN categories c ON r.category_id = c.id
+            WHERE r.date BETWEEN ? AND ?
+            """ + (category != null && !category.equals("Összes kategória") ? "AND c.category_name = ? " : "") +
+                (project != null && !project.equals("Összes projekt") ? "AND p.project_name = ? " : "") +
+            "GROUP BY month ORDER BY month";
 
-        // Dummy data: pl. havi bontás
-        // Itt érdemes SQL-lekérdezést írni, ami havi összesítést ad vissza
-        // Példa (dummy értékek):
-        incomeSeries.getData().add(new XYChart.Data<>("2025-01", 150000));
-        incomeSeries.getData().add(new XYChart.Data<>("2025-02", 180000));
-        incomeSeries.getData().add(new XYChart.Data<>("2025-03", 210000));
+        try (Connection conn = Database.connect();
+             PreparedStatement ps = conn.prepareStatement(query)) {
 
-        profitTrendChart.getData().add(incomeSeries);
+            ps.setDate(1, Date.valueOf(from));
+            ps.setDate(2, Date.valueOf(to));
+            int index = 3;
+            if (category != null && !category.equals("Összes kategória")) {
+                ps.setString(index++, category);
+            }
+            if (project != null && !project.equals("Összes projekt")) {
+                ps.setString(index, project);
+            }
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    String month = rs.getString("month");
+                    double total = rs.getDouble("total");
+                    revenueSeries.getData().add(new XYChart.Data<>(month, total));
+                }
+            }
+
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Hiba a trend chart frissítésekor", e);
+        }
+
+        profitTrendChart.getData().add(revenueSeries);
     }
 
     private void updateExpenseBreakdownChart(LocalDate from, LocalDate to, String category, String project) {
         expenseBreakdownChart.getData().clear();
 
-        // Dummy adatok kategóriánként
-        expenseBreakdownChart.getData().add(new PieChart.Data("Bérköltség", 300000));
-        expenseBreakdownChart.getData().add(new PieChart.Data("Anyagköltség", 150000));
-        expenseBreakdownChart.getData().add(new PieChart.Data("Szállítás", 50000));
+        String query = """
+            SELECT e.category, SUM(e.amount) AS total
+            FROM expenses e
+            JOIN projects p ON e.project_id = p.id
+            WHERE e.date BETWEEN ? AND ?
+            """ + (category != null && !category.equals("Összes kategória") ? "AND e.category = ? " : "") +
+                (project != null && !project.equals("Összes projekt") ? "AND p.project_name = ? " : "") +
+                "GROUP BY e.category";
+
+        try (Connection conn = Database.connect();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+
+            setQueryParams(ps, from, to, category, project);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    String cat = rs.getString("category");
+                    double total = rs.getDouble("total");
+                    expenseBreakdownChart.getData().add(new PieChart.Data(cat, total));
+                }
+            }
+
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Hiba a PieChart frissítésekor", e);
+        }
     }
 
-    private void updateSummaryLabel(LocalDate from, LocalDate to, String category, String project) {
-        // Itt összegezhetsz bevételeket és kiadásokat
+    @FXML
+    public void onRefresh(ActionEvent event) {
+        // Frissítés logika
+        loadData();
+        System.out.println("Refresh button clicked!");
+    }
 
-        double totalRevenue = 350000; // dummy
-        double totalExpense = 200000; // dummy
-
-        summaryLabel.setText(String.format("Összes bevétel: %.0f Ft | Összes kiadás: %.0f Ft", totalRevenue, totalExpense));
+    @FXML
+    private void onFilter(ActionEvent event) {
+        System.out.println("Szűrés gomb megnyomva");
+        loadData();
     }
 
     @FXML
     private void onExportPdf() {
-        // Export PDF funkció ide jön
         System.out.println("PDF export...");
+        // PDF generálás itt implementálható
     }
 
     @FXML
     private void onExportExcel() {
-        // Export Excel funkció ide jön
         System.out.println("Excel export...");
+        // Excel export itt implementálható
     }
 
-    // Egyszerű adatmodell osztályok
-    public static class IncomeRecord {
+    public static class FinanceRecord {
         private final String project;
         private final String type;
         private final String category;
         private final double amount;
 
-        public IncomeRecord(String project, String type, String category, double amount) {
+        public FinanceRecord(String project, String type, String category, double amount) {
             this.project = project;
             this.type = type;
             this.category = category;
@@ -245,6 +275,4 @@ public class FinanceController {
         public String getCategory() { return category; }
         public double getAmount() { return amount; }
     }
-
-    // Itt hasonlóan létrehozhatsz ExpenseRecord vagy más modelleket, ha kell
 }
