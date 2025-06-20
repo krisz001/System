@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <title>Kapcsolat</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f4f4f4; padding: 2rem; }
+        .form-container {
+            background: white;
+            padding: 2rem;
+            max-width: 600px;
+            margin: auto;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        input, textarea {
+            width: 100%;
+            padding: 1rem;
+            margin: 1rem 0;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+        button {
+            padding: 1rem 2rem;
+            background-color: #1e90ff;
+            border: none;
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Lépj kapcsolatba velünk</h2>
+        <form>
+            <input type="text" placeholder="Név" required>
+            <input type="email" placeholder="Email" required>
+            <textarea rows="5" placeholder="Üzenet" required></textarea>
+            <button type="submit">Küldés</button>
+        </form>
+    </div>
+</body>
+</html>

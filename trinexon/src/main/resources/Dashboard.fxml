@@ -48,14 +48,15 @@
         </ImageView>
 
         <!-- Projektek -->
-        <ImageView fx:id="projectImage" onMouseClicked="#openProjectWindow" fitHeight="330.0" fitWidth="430.0"
-                   AnchorPane.leftAnchor="736.0" AnchorPane.topAnchor="542.0"
-                   AnchorPane.rightAnchor="108.0" AnchorPane.bottomAnchor="45.0"
-                   pickOnBounds="true" preserveRatio="true">
-            <image>
-                <Image url="@img/3d-implementation-icon-trendy-modern-3d-implementation-icon-on-transparent-background-from-general-collection-3d-illustration-free-png.png" />
-            </image>
-        </ImageView>
+  <!-- Weboldalkezelés (3D icon) -->
+<ImageView fx:id="webEditorImage" onMouseClicked="#openWebEditor" fitHeight="330.0" fitWidth="430.0"
+           AnchorPane.leftAnchor="736.0" AnchorPane.topAnchor="542.0"
+           AnchorPane.rightAnchor="108.0" AnchorPane.bottomAnchor="45.0"
+           pickOnBounds="true" preserveRatio="true">
+    <image>
+        <Image url="@img/3d-implementation-icon-trendy-modern-3d-implementation-icon-on-transparent-background-from-general-collection-3d-illustration-free-png.png" />
+    </image>
+</ImageView>
 
         <!-- Dinamikus felirat -->
         <Text fx:id="felLabel" fill="#fcf7f7" layoutX="827.0" layoutY="51.46875"

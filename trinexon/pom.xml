@@ -20,7 +20,7 @@
         <maven.compiler.target>21</maven.compiler.target>
         <lombok.version>1.18.28</lombok.version>
         <test.util.version>1.0.5</test.util.version>
-        <javafx.version>20</javafx.version>
+        <javafx.version>23</javafx.version>
         <mysql.version>8.4.0</mysql.version>
         <slf4j.version>2.0.13</slf4j.version>
         <logback.version>1.4.14</logback.version>
@@ -56,13 +56,19 @@
             <artifactId>javafx-fxml</artifactId>
             <version>${javafx.version}</version>
         </dependency>
-        
+        <!-- ✅ Hozzáadva: WebView támogatás -->
         <dependency>
-	    	<groupId>org.mindrot</groupId>
-    		<artifactId>jbcrypt</artifactId>
-    		<version>0.4</version>
-		</dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-web</artifactId>
+            <version>${javafx.version}</version>
+        </dependency>
 
+        <!-- jBCrypt -->
+        <dependency>
+            <groupId>org.mindrot</groupId>
+            <artifactId>jbcrypt</artifactId>
+            <version>0.4</version>
+        </dependency>
 
         <!-- MySQL JDBC driver -->
         <dependency>

@@ -39,6 +39,7 @@ public class FinanceController {
     public void initialize() {
         setupColumns();
         loadComboBoxes();
+        setDefaultDates();
         loadData();
     }
 
@@ -53,37 +54,48 @@ public class FinanceController {
         ObservableList<String> categories = FXCollections.observableArrayList();
         ObservableList<String> projects = FXCollections.observableArrayList();
 
-        try (Connection conn = Database.connect()) {
-            try (Statement stmt = conn.createStatement()) {
-                ResultSet rsCat = stmt.executeQuery("SELECT DISTINCT category FROM expenses ORDER BY category");
+        try (Connection conn = Database.connect();
+             Statement stmt = conn.createStatement()) {
+
+            // Kategóriák lekérdezése az expenses táblából
+            try (ResultSet rsCat = stmt.executeQuery("SELECT DISTINCT category FROM expenses ORDER BY category")) {
                 while (rsCat.next()) {
                     categories.add(rsCat.getString("category"));
                 }
+            }
 
-                ResultSet rsProj = stmt.executeQuery("SELECT DISTINCT project_name FROM projects ORDER BY project_name");
+            // Projektek lekérdezése a projects táblából
+            try (ResultSet rsProj = stmt.executeQuery("SELECT DISTINCT project_name FROM projects ORDER BY project_name")) {
                 while (rsProj.next()) {
                     projects.add(rsProj.getString("project_name"));
                 }
             }
 
-            categoryComboBox.setItems(FXCollections.observableArrayList("Összes kategória"));
-            categoryComboBox.getItems().addAll(categories);
-            categoryComboBox.getSelectionModel().selectFirst();
-
-            projectComboBox.setItems(FXCollections.observableArrayList("Összes projekt"));
-            projectComboBox.getItems().addAll(projects);
-            projectComboBox.getSelectionModel().selectFirst();
-
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Hiba a ComboBox adatok betöltésekor", e);
+        }
+
+        categoryComboBox.setItems(FXCollections.observableArrayList("Összes kategória"));
+        categoryComboBox.getItems().addAll(categories);
+        categoryComboBox.getSelectionModel().selectFirst();
+
+        projectComboBox.setItems(FXCollections.observableArrayList("Összes projekt"));
+        projectComboBox.getItems().addAll(projects);
+        projectComboBox.getSelectionModel().selectFirst();
+    }
+
+    private void setDefaultDates() {
+        if (fromDatePicker.getValue() == null) {
+            fromDatePicker.setValue(LocalDate.now().minusMonths(1));
+        }
+        if (toDatePicker.getValue() == null) {
+            toDatePicker.setValue(LocalDate.now());
         }
     }
 
     private void loadData() {
-        LocalDate from = fromDatePicker.getValue() != null ? fromDatePicker.getValue() : LocalDate.now().minusMonths(1);
-        LocalDate to = toDatePicker.getValue() != null ? toDatePicker.getValue() : LocalDate.now();
-        fromDatePicker.setValue(from);
-        toDatePicker.setValue(to);
+        LocalDate from = fromDatePicker.getValue();
+        LocalDate to = toDatePicker.getValue();
 
         String category = categoryComboBox.getValue();
         String project = projectComboBox.getValue();
@@ -113,6 +125,7 @@ public class FinanceController {
 
         try (Connection conn = Database.connect()) {
 
+            // Bevétel adatok betöltése
             try (PreparedStatement ps = conn.prepareStatement(revenueQuery)) {
                 setQueryParams(ps, from, to, category, project);
                 try (ResultSet rs = ps.executeQuery()) {
@@ -124,6 +137,7 @@ public class FinanceController {
                 }
             }
 
+            // Kiadás adatok betöltése
             try (PreparedStatement ps = conn.prepareStatement(expenseQuery)) {
                 setQueryParams(ps, from, to, category, project);
                 try (ResultSet rs = ps.executeQuery()) {
@@ -135,10 +149,14 @@ public class FinanceController {
                 }
             }
 
+            // Táblázat feltöltése
             incomeStatementTable.setItems(records);
+
+            // Nettó eredmény és összegzés kiírása
             netProfitLabel.setText(String.format("Nettó eredmény: %.0f Ft", totalIncome - totalExpense));
             summaryLabel.setText(String.format("Összes bevétel: %.0f Ft | Összes kiadás: %.0f Ft", totalIncome, totalExpense));
 
+            // Grafikonok frissítése
             updateProfitTrendChart(from, to, category, project);
             updateExpenseBreakdownChart(from, to, category, project);
 
@@ -147,6 +165,10 @@ public class FinanceController {
         }
     }
 
+    /**
+     * Beállítja a PreparedStatement paramétereit az SQL lekérdezéshez.
+     * Figyelembe veszi a kategória és projekt szűrést.
+     */
     private void setQueryParams(PreparedStatement ps, LocalDate from, LocalDate to, String category, String project) throws SQLException {
         ps.setDate(1, Date.valueOf(from));
         ps.setDate(2, Date.valueOf(to));
@@ -172,7 +194,7 @@ public class FinanceController {
             WHERE r.date BETWEEN ? AND ?
             """ + (category != null && !category.equals("Összes kategória") ? "AND c.category_name = ? " : "") +
                 (project != null && !project.equals("Összes projekt") ? "AND p.project_name = ? " : "") +
-            "GROUP BY month ORDER BY month";
+                "GROUP BY month ORDER BY month";
 
         try (Connection conn = Database.connect();
              PreparedStatement ps = conn.prepareStatement(query)) {
@@ -234,29 +256,29 @@ public class FinanceController {
 
     @FXML
     public void onRefresh(ActionEvent event) {
-        // Frissítés logika
         loadData();
-        System.out.println("Refresh button clicked!");
+        System.out.println("Frissítés gomb megnyomva");
     }
 
     @FXML
     private void onFilter(ActionEvent event) {
-        System.out.println("Szűrés gomb megnyomva");
         loadData();
+        System.out.println("Szűrés gomb megnyomva");
     }
 
     @FXML
     private void onExportPdf() {
-        System.out.println("PDF export...");
-        // PDF generálás itt implementálható
+        System.out.println("PDF exportálás indítása...");
+        // PDF generálás implementálása itt
     }
 
     @FXML
     private void onExportExcel() {
-        System.out.println("Excel export...");
-        // Excel export itt implementálható
+        System.out.println("Excel exportálás indítása...");
+        // Excel export implementálása itt
     }
 
+    // Belső osztály az adatmodellhez
     public static class FinanceRecord {
         private final String project;
         private final String type;

@@ -88,6 +88,14 @@
                         <Insets top="15" right="15" bottom="15" left="15"/>
                     </padding>
 
+                    <!-- Diagram szűrők -->
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="Kategória szűrő:"/>
+                        <ComboBox fx:id="chartCategoryFilterComboBox" prefWidth="150" promptText="Összes kategória"/>
+                        <Label text="Projekt szűrő:"/>
+                        <ComboBox fx:id="chartProjectFilterComboBox" prefWidth="150" promptText="Összes projekt"/>
+                    </HBox>
+
                     <!-- Bevétel/Kiadás trend -->
                     <Label text="Bevétel / Kiadás trend (hónapok szerint)" styleClass="section-label"/>
                     <LineChart fx:id="profitTrendChart" title="Időszaki trend" animated="false" prefHeight="300">
@@ -102,6 +110,35 @@
                     <!-- Költségeloszlás -->
                     <Label text="Költségeloszlás kategóriák szerint" styleClass="section-label"/>
                     <PieChart fx:id="expenseBreakdownChart" legendVisible="true" labelsVisible="true" prefHeight="300"/>
+
+                    <!-- ÚJ: Projektalapú profit diagram -->
+                    <Label text="Profit projektenként" styleClass="section-label"/>
+                    <BarChart fx:id="projectProfitChart" title="Profit projektenként" animated="false" prefHeight="300">
+                        <xAxis>
+                            <CategoryAxis label="Projekt"/>
+                        </xAxis>
+                        <yAxis>
+                            <NumberAxis label="Profit (Ft)"/>
+                        </yAxis>
+                    </BarChart>
+                </VBox>
+            </Tab>
+
+            <!-- Éves összesítés -->
+            <Tab text="Éves összesítés">
+                <VBox spacing="15">
+                    <padding>
+                        <Insets top="15" right="15" bottom="15" left="15"/>
+                    </padding>
+                    <Label text="Éves pénzügyi összesítő" styleClass="section-label"/>
+                    <TableView fx:id="yearlySummaryTable" editable="false">
+                        <columns>
+                            <TableColumn fx:id="yearlyProjectColumn" text="Projekt" prefWidth="150"/>
+                            <TableColumn fx:id="yearlyIncomeColumn" text="Bevétel (Ft)" prefWidth="150"/>
+                            <TableColumn fx:id="yearlyExpenseColumn" text="Kiadás (Ft)" prefWidth="150"/>
+                            <TableColumn fx:id="yearlyProfitColumn" text="Eredmény (Ft)" prefWidth="150"/>
+                        </columns>
+                    </TableView>
                 </VBox>
             </Tab>
 

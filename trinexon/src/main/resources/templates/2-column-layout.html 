@@ -1,0 +1,10 @@
+<div style="display: flex; gap: 2rem;">
+    <div style="flex: 1;">
+        <h3>Bal oldali hasáb</h3>
+        <p>Tartalom itt...</p>
+    </div>
+    <div style="flex: 1;">
+        <h3>Jobb oldali hasáb</h3>
+        <p>Tartalom itt...</p>
+    </div>
+</div>

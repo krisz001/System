@@ -3,6 +3,9 @@
     -fx-background-color: #f9f9fb;
     -fx-text-fill: #333;
 }
+.default-color0.chart-bar { -fx-bar-fill: #3e8acc; }
+.default-color1.chart-bar { -fx-bar-fill: #76c7c0; }
+.default-color2.chart-bar { -fx-bar-fill: #f4a261; }
 
 .top-bar {
     -fx-background-color: linear-gradient(to right, #e6f0ff, #f0f4ff);

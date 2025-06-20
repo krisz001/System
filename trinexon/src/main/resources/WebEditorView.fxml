@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.web.WebView?>
+
+<VBox xmlns="http://javafx.com/javafx/20"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="System.trinexon.WebEditorController"
+      prefWidth="1000" prefHeight="650"
+      style="-fx-background-color: #121212;">
+
+    <fx:define>
+        <Font fx:id="titleFont" name="Segoe UI Semibold" size="18.0"/>
+        <Font fx:id="bodyFont" name="Segoe UI" size="12.0"/>
+        <Color fx:id="textColor" red="0.9" green="0.9" blue="0.9"/>
+        <Color fx:id="highlight" red="0.27" green="0.56" blue="0.96"/>
+    </fx:define>
+
+    <!-- Eszköztár -->
+    <ToolBar style="-fx-background-color: #1f1f1f;">
+        <Button text="🗑️ Törlés" onAction="#onDeleteFileClicked"
+                style="-fx-background-color: #2a2a2a; -fx-text-fill: white;">
+            <tooltip><Tooltip text="Kiválasztott fájl törlése"/></tooltip>
+        </Button>
+        <Button text="➕ Új fájl" onAction="#onNewFileClicked"
+                style="-fx-background-color: #2a2a2a; -fx-text-fill: white;">
+            <tooltip><Tooltip text="Új HTML fájl létrehozása"/></tooltip>
+        </Button>
+        <Button text="💾 Mentés" onAction="#onSaveClicked"
+                style="-fx-background-color: #2a2a2a; -fx-text-fill: white;">
+            <tooltip><Tooltip text="Aktuális fájl mentése"/></tooltip>
+        </Button>
+        <Button text="🔁 Előnézet" onAction="#onPreviewClicked"
+                style="-fx-background-color: #2a2a2a; -fx-text-fill: white;">
+            <tooltip><Tooltip text="HTML előnézet frissítése"/></tooltip>
+        </Button>
+
+        <Separator orientation="VERTICAL"/>
+
+        <Label text="🎨 CSS:" textFill="$textColor"/>
+        <ComboBox fx:id="cssComboBox" promptText="Válassz CSS fájlt" prefWidth="140"/>
+
+        <Label text="📄 Sablon:" textFill="$textColor"/>
+        <ComboBox fx:id="templateComboBox" promptText="Válassz sablont" prefWidth="160"/>
+
+        <Button text="🔗 Linkelés" onAction="#onAttachCssClicked"
+                style="-fx-background-color: #2a2a2a; -fx-text-fill: white;">
+            <tooltip><Tooltip text="CSS fájl csatolása"/></tooltip>
+        </Button>
+        <Button text="📄 Beszúrás" onAction="#onInsertTemplateClicked"
+                style="-fx-background-color: #2a2a2a; -fx-text-fill: white;">
+            <tooltip><Tooltip text="Sablon beszúrása"/></tooltip>
+        </Button>
+
+        <TextField fx:id="searchField" promptText="Keresés..." prefWidth="140"
+                   style="-fx-background-color: #2a2a2a; -fx-text-fill: white;"/>
+        <Button text="🔍" onAction="#onSearch"
+                style="-fx-background-color: #2a2a2a; -fx-text-fill: white;">
+            <tooltip><Tooltip text="Keresés a HTML szövegben"/></tooltip>
+        </Button>
+
+        <Button text="📤 Export" onAction="#onExportFile"
+                style="-fx-background-color: #2a2a2a; -fx-text-fill: white;">
+            <tooltip><Tooltip text="HTML fájl exportálása"/></tooltip>
+        </Button>
+
+        <Separator orientation="VERTICAL"/>
+
+        <!-- AI generálás -->
+        <TextField fx:id="aiPromptField" promptText="Írj HTML utasítást..." prefWidth="200"
+                   style="-fx-background-color: #2a2a2a; -fx-text-fill: white;"/>
+        <Button text="✨ AI generálás" onAction="#onAIGenerateClicked"
+                style="-fx-background-color: #2a2a2a; -fx-text-fill: white;">
+            <tooltip><Tooltip text="HTML generálása AI segítségével"/></tooltip>
+        </Button>
+    </ToolBar>
+
+    <!-- Tartalom -->
+    <SplitPane dividerPositions="0.2,0.6" VBox.vgrow="ALWAYS" style="-fx-background-color: #121212;">
+        <items>
+            <!-- Bal oldal: fájllista -->
+            <AnchorPane>
+                <VBox spacing="10.0" AnchorPane.topAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                      AnchorPane.rightAnchor="0.0" AnchorPane.bottomAnchor="0.0">
+                    <padding><Insets top="15" right="10" bottom="15" left="10"/></padding>
+                    <Label text="📁 HTML fájlok" font="$titleFont" textFill="$highlight"/>
+                    <ListView fx:id="fileListView" prefWidth="200"
+                              style="-fx-background-color: #1e1e1e; -fx-text-fill: white;"/>
+                </VBox>
+            </AnchorPane>
+
+            <!-- Közép: HTML szerkesztő -->
+            <AnchorPane>
+                <VBox spacing="10.0" AnchorPane.topAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                      AnchorPane.rightAnchor="0.0" AnchorPane.bottomAnchor="0.0">
+                    <padding><Insets top="15" right="15" bottom="15" left="15"/></padding>
+                    <Label text="📝 HTML szerkesztés" font="$titleFont" textFill="$highlight"/>
+                    <TextArea fx:id="htmlEditor" wrapText="true" VBox.vgrow="ALWAYS"
+                              style="-fx-control-inner-background: #1e1e1e; -fx-text-fill: white; -fx-font-family: 'Consolas';"/>
+                </VBox>
+            </AnchorPane>
+
+            <!-- Jobb oldal: Előnézet -->
+            <AnchorPane>
+                <VBox spacing="10.0" AnchorPane.topAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                      AnchorPane.rightAnchor="0.0" AnchorPane.bottomAnchor="0.0">
+                    <padding><Insets top="15" right="15" bottom="15" left="15"/></padding>
+                    <Label text="🌐 Előnézet" font="$titleFont" textFill="$highlight"/>
+                    <WebView fx:id="webPreview" VBox.vgrow="ALWAYS"/>
+                </VBox>
+            </AnchorPane>
+        </items>
+    </SplitPane>
+
+    <!-- Alsó státuszsor -->
+    <HBox alignment="CENTER_LEFT" spacing="5.0" VBox.vgrow="NEVER"
+          style="-fx-background-color: #1f1f1f;">
+        <padding><Insets top="6" bottom="6" left="10" right="10"/></padding>
+        <Label text="Webszerkesztő készen áll..." font="$bodyFont" textFill="$textColor" HBox.hgrow="ALWAYS"/>
+        <Pane HBox.hgrow="ALWAYS"/>
+        <Label text="🤖 Trinexon | AI Marketing Modul" font="$bodyFont" textFill="$highlight"/>
+    </HBox>
+</VBox>

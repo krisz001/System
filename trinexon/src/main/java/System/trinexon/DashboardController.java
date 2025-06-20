@@ -38,6 +38,20 @@ public class DashboardController {
     }
 
     @FXML
+    private void openWebEditor() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/WebEditorView.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = new Stage();
+            stage.setTitle("Weboldal szerkesztő - Trinexon");
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    @FXML
     public void openWorkerWindow(MouseEvent event) {
         openModalWindow("/workerView.fxml", "Munkavállalói nyilvántartás");
     }

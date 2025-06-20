@@ -1,0 +1,18 @@
+# IDE-k és build rendszerek
+.idea/
+*.iml
+*.class
+target/
+bin/
+
+# Config fájlok
+src/main/resources/config.properties
+
+# OS specifikus
+.DS_Store
+
+# Logok, temp
+*.log
+*.tmp
+
+trinexon/src/main/resources/config.properties

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <title>Trinexon | Kezdőlap</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(to bottom right, #0f2027, #203a43, #2c5364);
+            color: white;
+        }
+        header {
+            padding: 2rem;
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        section {
+            padding: 3rem;
+            text-align: center;
+        }
+        .cta-button {
+            background-color: #1e90ff;
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: background-color 0.3s ease;
+        }
+        .cta-button:hover {
+            background-color: #0d6efd;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Üdvözlünk a Trinexon világában</h1>
+        <p>AI-alapú webes megoldások és szerkesztő eszközök</p>
+    </header>
+    <section>
+        <h2>Modern HTML sablon, testreszabható dizájnnal</h2>
+        <button class="cta-button">Indítás</button>
+    </section>
+</body>
+</html>

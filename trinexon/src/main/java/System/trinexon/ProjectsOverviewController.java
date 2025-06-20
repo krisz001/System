@@ -3,6 +3,7 @@ package System.trinexon;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
@@ -48,7 +49,6 @@ public class ProjectsOverviewController {
 
     private ObservableList<Project> projects = FXCollections.observableArrayList();
 
-    // Adatbázis kapcsolat
     private final String DB_URL = "jdbc:mysql://localhost:3306/trinexon?useSSL=false&serverTimezone=UTC";
     private final String DB_USER = "root";
     private final String DB_PASS = "KrisztiaN12";
@@ -59,6 +59,9 @@ public class ProjectsOverviewController {
         addActionsToTable();
         loadProjectsFromDB();
         updateStatistics();
+
+        // Élő keresés gépelésre
+        searchField.setOnKeyReleased(event -> handleSearch());
     }
 
     private void setupColumns() {
@@ -68,7 +71,33 @@ public class ProjectsOverviewController {
         endDateColumn.setCellValueFactory(new PropertyValueFactory<>("endDate"));
         statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
         managerColumn.setCellValueFactory(new PropertyValueFactory<>("manager"));
+
+        // Költség oszlopnál null kezelés: 0 vagy N/A megjelenítéshez custom cell factory
         budgetColumn.setCellValueFactory(new PropertyValueFactory<>("budget"));
+        budgetColumn.setCellFactory(column -> new TableCell<>() {
+            @Override
+            protected void updateItem(Double item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText("N/A");
+                } else {
+                    setText(String.format("%.2f", item));
+                }
+            }
+        });
+
+        // Hasonlóan az endDate null kezelése
+        endDateColumn.setCellFactory(column -> new TableCell<>() {
+            @Override
+            protected void updateItem(LocalDate item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText("N/A");
+                } else {
+                    setText(item.toString());
+                }
+            }
+        });
     }
 
     private void addActionsToTable() {
@@ -82,6 +111,8 @@ public class ProjectsOverviewController {
                     private final HBox pane = new HBox(5, editBtn, deleteBtn);
 
                     {
+                        pane.setPadding(new Insets(0, 0, 0, 5)); // kis távolság a gombok között
+
                         editBtn.setOnAction(event -> {
                             Project project = getTableView().getItems().get(getIndex());
                             openEditProjectDialog(project);
@@ -116,14 +147,14 @@ public class ProjectsOverviewController {
                 double budget = rs.getObject("budget") != null ? rs.getDouble("budget") : 0.0;
 
                 Project p = new Project(
-                    rs.getInt("id"),
-                    rs.getString("name"),
-                    rs.getString("description"),
-                    rs.getDate("start_date").toLocalDate(),
-                    endDate,
-                    status,
-                    manager,
-                    budget
+                        rs.getInt("id"),
+                        rs.getString("name"),
+                        rs.getString("description"),
+                        rs.getDate("start_date").toLocalDate(),
+                        endDate,
+                        status,
+                        manager,
+                        budget
                 );
                 projects.add(p);
             }
@@ -204,8 +235,7 @@ public class ProjectsOverviewController {
     }
 
     private void openEditProjectDialog(Project project) {
-        // TODO: Implementálni egy dialógust, ahol a projekt adatai módosíthatók
-        // Pl. új ablak nyitása, amelyben űrlap található, és a módosítás után update az adatbázisban.
+        // TODO: Szerkesztő ablak implementálása
         showAlert(Alert.AlertType.INFORMATION, "Szerkesztés", "A szerkesztés funkció még nincs implementálva.");
     }
 
