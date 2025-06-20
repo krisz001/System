@@ -56,7 +56,6 @@
             <artifactId>javafx-fxml</artifactId>
             <version>${javafx.version}</version>
         </dependency>
-        <!-- ✅ Hozzáadva: WebView támogatás -->
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-web</artifactId>
@@ -97,11 +96,18 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Optional: Spring Core -->
+        <!-- Spring Core -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
             <version>${spring.version}</version>
+        </dependency>
+
+        <!-- ✅ JSON támogatás (org.json) -->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20240303</version>
         </dependency>
     </dependencies>
 
@@ -154,7 +160,7 @@
                 </configuration>
             </plugin>
 
-            <!-- JUnit 5 test plugin -->
+            <!-- JUnit 5 plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -193,5 +199,4 @@
             </build>
         </profile>
     </profiles>
-
 </project>

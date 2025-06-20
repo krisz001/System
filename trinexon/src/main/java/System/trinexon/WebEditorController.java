@@ -17,6 +17,8 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.json.*;
+
 public class WebEditorController {
 
     @FXML private TextArea htmlEditor;
@@ -53,7 +55,7 @@ public class WebEditorController {
             Files.createDirectories(templatesDir);
             Files.createDirectories(cssDir);
         } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Könyvtár hiba", "Nem sikerült a könyvtárak létrehozása: " + e.getMessage());
+            showPopup("Nem sikerült a könyvtárak létrehozása: " + e.getMessage());
         }
     }
 
@@ -65,7 +67,7 @@ public class WebEditorController {
                     .toList();
             fileListView.getItems().setAll(files);
         } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Hiba", "Fájlok betöltése sikertelen: " + e.getMessage());
+            showPopup("Fájlok betöltése sikertelen: " + e.getMessage());
         }
     }
 
@@ -78,6 +80,7 @@ public class WebEditorController {
             templateComboBox.getItems().setAll(templateNames);
         } catch (IOException e) {
             templateComboBox.getItems().add("<nincs elérhető sablon>");
+            showPopup("Sablonok betöltése sikertelen: " + e.getMessage());
         }
     }
 
@@ -90,6 +93,7 @@ public class WebEditorController {
             cssComboBox.getItems().setAll(cssFiles);
         } catch (IOException e) {
             cssComboBox.getItems().add("<nincs css>");
+            showPopup("CSS fájlok betöltése sikertelen: " + e.getMessage());
         }
     }
 
@@ -100,7 +104,7 @@ public class WebEditorController {
             loadPreview(content);
         } catch (IOException e) {
             htmlEditor.clear();
-            showAlert(Alert.AlertType.ERROR, "Fájlhiba", "Nem sikerült a fájl betöltése: " + e.getMessage());
+            showPopup("Nem sikerült a fájl betöltése: " + e.getMessage());
         }
     }
 
@@ -110,13 +114,15 @@ public class WebEditorController {
 
     @FXML
     private void onSaveClicked() {
+        if (currentFilePath == null) {
+            showPopup("Mentéshez válassz ki egy fájlt.");
+            return;
+        }
         try {
-            if (currentFilePath != null) {
-                Files.writeString(currentFilePath, htmlEditor.getText(), StandardCharsets.UTF_8);
-                loadPreview(htmlEditor.getText());
-            }
+            Files.writeString(currentFilePath, htmlEditor.getText(), StandardCharsets.UTF_8);
+            loadPreview(htmlEditor.getText());
         } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Mentési hiba", "Nem sikerült menteni: " + e.getMessage());
+            showPopup("Nem sikerült menteni: " + e.getMessage());
         }
     }
 
@@ -135,22 +141,20 @@ public class WebEditorController {
         dialog.showAndWait().ifPresent(fileName -> {
             try {
                 if (!fileName.endsWith(".html")) fileName += ".html";
-
                 if (!isValidFileName(fileName)) {
-                    showAlert(Alert.AlertType.WARNING, "Érvénytelen fájlnév", "A fájlnév nem tartalmazhat speciális karaktereket.");
+                    showPopup("A fájlnév nem tartalmazhat speciális karaktereket.");
                     return;
                 }
-
                 Path newFile = htmlDir.resolve(fileName);
                 if (!Files.exists(newFile)) {
                     Files.writeString(newFile, "<!-- Új HTML oldal -->", StandardCharsets.UTF_8);
                     loadFileList();
                     fileListView.getSelectionModel().select(fileName);
                 } else {
-                    showAlert(Alert.AlertType.WARNING, "A fájl már létezik", "Adj meg másik nevet.");
+                    showPopup("A fájl már létezik. Adj meg másik nevet.");
                 }
             } catch (IOException e) {
-                showAlert(Alert.AlertType.ERROR, "Hiba a létrehozáskor", e.getMessage());
+                showPopup("Hiba a létrehozáskor: " + e.getMessage());
             }
         });
     }
@@ -162,12 +166,10 @@ public class WebEditorController {
     @FXML
     private void onDeleteFileClicked() {
         String selectedFile = fileListView.getSelectionModel().getSelectedItem();
-
         if (selectedFile == null) {
-            showAlert(Alert.AlertType.INFORMATION, "Nincs fájl kiválasztva", "Válassz fájlt a törléshez.");
+            showPopup("Válassz fájlt a törléshez.");
             return;
         }
-
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("Törlés megerősítése");
         confirm.setHeaderText("Tényleg törlöd?");
@@ -182,7 +184,7 @@ public class WebEditorController {
                     webPreview.getEngine().loadContent("", "text/html");
                     loadFileList();
                 } catch (IOException e) {
-                    showAlert(Alert.AlertType.ERROR, "Hiba a törlés során", e.getMessage());
+                    showPopup("Hiba a törlés során: " + e.getMessage());
                 }
             }
         });
@@ -196,12 +198,12 @@ public class WebEditorController {
                 Path templatePath = templatesDir.resolve(selectedTemplate);
                 String content = Files.readString(templatePath, StandardCharsets.UTF_8);
                 htmlEditor.insertText(htmlEditor.getCaretPosition(), content);
-                showAlert(Alert.AlertType.INFORMATION, "Sablon beszúrva", "A(z) " + selectedTemplate + " sablon beillesztve.");
+                showPopup("A(z) " + selectedTemplate + " sablon beillesztve.");
             } catch (IOException e) {
-                showAlert(Alert.AlertType.ERROR, "Hiba a sablon betöltéskor", e.getMessage());
+                showPopup("Hiba a sablon betöltéskor: " + e.getMessage());
             }
         } else {
-            showAlert(Alert.AlertType.WARNING, "Nincs sablon kiválasztva", "Előbb válassz ki egy sablont a legördülő menüből.");
+            showPopup("Előbb válassz ki egy sablont a legördülő menüből.");
         }
     }
 
@@ -218,14 +220,12 @@ public class WebEditorController {
                 if (!Files.exists(targetPath)) {
                     Files.copy(selectedFile.toPath(), targetPath, StandardCopyOption.REPLACE_EXISTING);
                 }
-
                 String linkTag = "<link rel=\"stylesheet\" href=\"css/" + selectedFile.getName() + "\">\n";
                 htmlEditor.insertText(htmlEditor.getCaretPosition(), linkTag);
-                showAlert(Alert.AlertType.INFORMATION, "CSS csatolva", "A következő fájl hozzáadva: " + selectedFile.getName());
                 loadCssOptions();
-
+                showPopup("A CSS fájl csatolva: " + selectedFile.getName());
             } catch (IOException e) {
-                showAlert(Alert.AlertType.ERROR, "Hiba", "Nem sikerült a CSS fájl másolása: " + e.getMessage());
+                showPopup("Nem sikerült a CSS fájl másolása: " + e.getMessage());
             }
         }
     }
@@ -238,7 +238,7 @@ public class WebEditorController {
             if (index >= 0) {
                 htmlEditor.selectRange(index, index + keyword.length());
             } else {
-                showAlert(Alert.AlertType.INFORMATION, "Nincs találat", "Nem található a megadott szöveg.");
+                showPopup("Nem található a megadott szöveg.");
             }
         }
     }
@@ -255,15 +255,16 @@ public class WebEditorController {
             try {
                 Files.writeString(file.toPath(), htmlEditor.getText(), StandardCharsets.UTF_8);
             } catch (IOException e) {
-                showAlert(Alert.AlertType.ERROR, "Mentési hiba", e.getMessage());
+                showPopup("Mentési hiba: " + e.getMessage());
             }
         }
     }
+
     @FXML
     private void onAIGenerateClicked() {
         String prompt = aiPromptField.getText();
         if (prompt == null || prompt.isBlank()) {
-            showAlert(Alert.AlertType.WARNING, "Hiányzó bemenet", "Adj meg egy leírást az AI-nak.");
+            showPopup("Adj meg egy leírást az AI-nak.");
             return;
         }
 
@@ -272,40 +273,54 @@ public class WebEditorController {
 
         try {
             HttpClient client = HttpClient.newHttpClient();
-            String body = "{" +
-                    "\"model\":\"gpt-3.5-turbo-instruct\"," +
-                    "\"prompt\":\"Írj HTML kódot a következőhöz: " + prompt.replace("\"", "\\\"") + "\"," +
-                    "\"max_tokens\":500" +
-                    "}";
+            String body = new JSONObject()
+                    .put("model", "gpt-4")
+                    .put("messages", new JSONArray()
+                            .put(new JSONObject()
+                                    .put("role", "user")
+                                    .put("content", "Írj HTML kódot a következőhöz: " + prompt)))
+                    .put("max_tokens", 500)
+                    .toString();
 
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("https://api.openai.com/v1/completions"))
+                    .uri(URI.create("https://api.openai.com/v1/chat/completions"))
                     .header("Content-Type", "application/json")
                     .header("Authorization", "Bearer " + apiKey)
                     .POST(HttpRequest.BodyPublishers.ofString(body))
                     .build();
 
             client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                    .thenApply(HttpResponse::body)
                     .thenAccept(response -> {
-                        String result = response.replaceAll(".*?\"text\"\\s*:\\s*\"(.*?)\".*", "$1")
-                                .replace("\\n", "\n")
-                                .replace("\\\"", "\"")
-                                .trim();
-
+                        if (response.statusCode() != 200) {
+                            javafx.application.Platform.runLater(() ->
+                                    showPopup("AI válasz hiba: státuszkód: " + response.statusCode()));
+                            return;
+                        }
+                        String result = extractMessageContentFromJson(response.body());
                         javafx.application.Platform.runLater(() -> {
                             htmlEditor.insertText(htmlEditor.getCaretPosition(), result);
                             loadPreview(htmlEditor.getText());
-                            showAlert(Alert.AlertType.INFORMATION, "AI generálás kész", "A HTML szakasz beszúrva.");
+                            showPopup("A HTML szakasz beszúrva.");
                         });
                     })
                     .exceptionally(e -> {
-                        javafx.application.Platform.runLater(() -> showAlert(Alert.AlertType.ERROR, "Hiba", "AI hívás sikertelen: " + e.getMessage()));
+                        javafx.application.Platform.runLater(() -> showPopup("AI hívás sikertelen: " + e.getMessage()));
                         return null;
                     });
-
         } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "Hiba", e.getMessage());
+            showPopup("Hiba: " + e.getMessage());
+        }
+    }
+
+    private String extractMessageContentFromJson(String json) {
+        try {
+            JSONObject obj = new JSONObject(json);
+            return obj.getJSONArray("choices")
+                    .getJSONObject(0)
+                    .getJSONObject("message")
+                    .getString("content");
+        } catch (JSONException e) {
+            return "[Hiba: válasz nem értelmezhető]";
         }
     }
 
@@ -315,16 +330,14 @@ public class WebEditorController {
             prop.load(input);
             return prop.getProperty("openai.api.key");
         } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Konfigurációs hiba", "Nem található vagy nem olvasható a config.properties.");
+            showPopup("Nem található vagy nem olvasható a config.properties.");
             return null;
         }
     }
 
-    private void showAlert(Alert.AlertType type, String title, String message) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+    private void showPopup(String message) {
+        Tooltip tip = new Tooltip(message);
+        tip.setAutoHide(true);
+        tip.show(htmlEditor.getScene().getWindow());
     }
 }
