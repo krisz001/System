@@ -1,50 +1,137 @@
 .root {
-    -fx-font-family: "Segoe UI", sans-serif;
-    -fx-background-color: #f9f9fb;
-    -fx-text-fill: #333;
-}
-.default-color0.chart-bar { -fx-bar-fill: #3e8acc; }
-.default-color1.chart-bar { -fx-bar-fill: #76c7c0; }
-.default-color2.chart-bar { -fx-bar-fill: #f4a261; }
-
-.top-bar {
-    -fx-background-color: linear-gradient(to right, #e6f0ff, #f0f4ff);
+    -fx-font-family: "JetBrains Mono", "Segoe UI", "Roboto", sans-serif;
+    -fx-background-color: linear-gradient(to bottom, #0a0f17, #101720); /* mély, sötét AI háttér */
+    -fx-text-fill: #000000;
 }
 
-.bottom-bar {
-    -fx-background-color: #f0f0f0;
-}
-
-.tab-pane {
-    -fx-background-color: white;
-}
-
-.primary-button {
-    -fx-background-color: #4A90E2;
-    -fx-text-fill: white;
-    -fx-font-weight: bold;
-    -fx-padding: 5 15 5 15;
-    -fx-background-radius: 5;
-}
-
-.primary-button:hover {
-    -fx-background-color: #357ABD;
-}
-
-.secondary-button {
-    -fx-background-color: #d9d9d9;
-    -fx-text-fill: #333;
-    -fx-font-weight: bold;
-    -fx-padding: 5 15 5 15;
-    -fx-background-radius: 5;
-}
-
-.secondary-button:hover {
-    -fx-background-color: #c0c0c0;
+/* Címkék */
+.label {
+    -fx-text-fill: #fffff0;
+    -fx-font-size: 15px;
 }
 
 .highlight-label {
-    -fx-font-size: 16px;
+    -fx-text-fill: #00ffc3;
+    -fx-font-size: 17px;
     -fx-font-weight: bold;
-    -fx-text-fill: #2c3e50;
+    -fx-effect: dropshadow(gaussian, rgba(0,255,213,0.4), 10, 0.4, 0, 1);
+}
+
+/* Gombok */
+.primary-button {
+    -fx-background-color: linear-gradient(to right, #00ffc3, #00bfa6);
+    -fx-text-fill: #0a0f17;
+    -fx-font-weight: bold;
+    -fx-background-radius: 10;
+    -fx-effect: dropshadow(gaussian, rgba(0,255,195,0.5), 12, 0.6, 0, 2);
+}
+
+.primary-button:hover {
+    -fx-background-color: linear-gradient(to right, #00ffe8, #00d6ba);
+}
+
+.secondary-button {
+    -fx-background-color: transparent;
+    -fx-border-color: #00ffc3;
+    -fx-text-fill: #00ffc3;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-effect: dropshadow(gaussian, rgba(0,255,195,0.3), 8, 0.5, 0, 1);
+}
+
+/* TabPane */
+.tab-pane {
+    -fx-tab-min-width: 120px;
+    -fx-tab-max-width: 160px;
+    -fx-background-color: transparent;
+}
+
+.tab-pane .tab {
+    -fx-background-color: #0c1018;
+    -fx-text-base-color: #a8ffec;
+}
+
+.tab-pane .tab:selected {
+    -fx-background-color: #00ffc3;
+    -fx-text-base-color: #0c1018;
+}
+
+/* Táblázatok */
+.table-view {
+    -fx-background-color: #111820;
+    -fx-control-inner-background: #111820;
+    -fx-table-cell-border-color: #1d2733;
+    -fx-font-size: 13px;
+    -fx-border-color: transparent;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #1a202c;
+}
+
+.table-view .column-header, .table-view .filler {
+    -fx-background-color: #1a202c;
+    -fx-text-fill: #ff00ff;
+}
+
+.table-view .table-cell {
+    -fx-text-fill: #ff0f0f;
+    -fx-background-color: transparent;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 5px 8px;
+}
+
+.table-view .table-row-cell:filled {
+    -fx-background-color: #131920;
+    -fx-text-fill: #ffffff;
+}
+
+.table-view .table-row-cell:filled:hover {
+    -fx-background-color: #1d2633;
+}
+
+.table-view .table-row-cell:filled:selected {
+    -fx-background-color: #1c2733;  /* sötét kijelölés */
+    -fx-text-fill: #ffffff;
+}
+
+/* ComboBox és DatePicker */
+.combo-box, .date-picker {
+    -fx-background-color: #101b26;
+    -fx-text-fill: #ffffff;
+    -fx-border-color: #00ffc3;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+}
+
+.combo-box .list-cell, .date-picker .text-field {
+    -fx-text-fill: #ffffff;
+    -fx-background-color: transparent;
+}
+
+/* Diagramok */
+.chart-title, .chart-legend {
+    -fx-text-fill: #cccccc;
+    -fx-font-size: 14px;
+}
+
+.pie-chart, .bar-chart, .line-chart {
+    -fx-background-color: #121721;
+}
+
+/* Alsó export-sáv */
+.bottom-bar {
+    -fx-background-color: #0c1018;
+    -fx-border-color: #1d2733;
+    -fx-border-width: 1 0 0 0;
+}
+
+/* Tooltip */
+.tooltip {
+    -fx-background-color: #121c26;
+    -fx-text-fill: #e0ffff;
+    -fx-padding: 8;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-font-size: 13px;
 }

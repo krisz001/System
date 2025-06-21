@@ -59,9 +59,7 @@ public class Project {
     }
 
     public void setEndDate(LocalDate endDate) {
-        if (endDate == null) throw new IllegalArgumentException("Záró dátum nem lehet null");
-        if (getStartDate() != null && endDate.isBefore(getStartDate()))
-            throw new IllegalArgumentException("Záró dátum nem lehet korábbi, mint a kezdő dátum");
+        // Nem dob hibát, ha null — opcionális mezőként kezeljük
         this.endDate.set(endDate);
     }
 
