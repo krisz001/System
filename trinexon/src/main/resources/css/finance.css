@@ -1,65 +1,59 @@
 .root {
     -fx-font-family: "JetBrains Mono", "Segoe UI", "Roboto", sans-serif;
-    -fx-background-color: linear-gradient(to bottom, #0a0f17, #101720); /* mély, sötét AI háttér */
-    -fx-text-fill: #000000;
+    -fx-background-color: linear-gradient(to bottom, #0d1117, #161b22);
+    -fx-text-fill: #d0d8e0;
+
+    -fx-accent: #4dd0e1;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-selection-bar: #222e3c;
+    -fx-selection-bar-non-focused: #1c242f;
 }
 
-/* Címkék */
+/* --- Címkék --- */
 .label {
-    -fx-text-fill: #fffff0;
-    -fx-font-size: 15px;
+    -fx-text-fill: #c9d1d9;
+    -fx-font-size: 14px;
 }
 
 .highlight-label {
-    -fx-text-fill: #00ffc3;
-    -fx-font-size: 17px;
+    -fx-text-fill: #4dd0e1;
+    -fx-font-size: 16px;
     -fx-font-weight: bold;
-    -fx-effect: dropshadow(gaussian, rgba(0,255,213,0.4), 10, 0.4, 0, 1);
 }
 
-/* Gombok */
+/* --- Gombok --- */
 .primary-button {
-    -fx-background-color: linear-gradient(to right, #00ffc3, #00bfa6);
-    -fx-text-fill: #0a0f17;
+    -fx-background-color: linear-gradient(to right, #4dd0e1, #00acc1);
+    -fx-text-fill: #0d1117;
     -fx-font-weight: bold;
-    -fx-background-radius: 10;
-    -fx-effect: dropshadow(gaussian, rgba(0,255,195,0.5), 12, 0.6, 0, 2);
+    -fx-background-radius: 8;
+    -fx-padding: 6 14;
+    -fx-cursor: hand;
 }
 
 .primary-button:hover {
-    -fx-background-color: linear-gradient(to right, #00ffe8, #00d6ba);
+    -fx-background-color: linear-gradient(to right, #69f0ae, #00e5ff);
 }
 
 .secondary-button {
     -fx-background-color: transparent;
-    -fx-border-color: #00ffc3;
-    -fx-text-fill: #00ffc3;
-    -fx-border-radius: 10;
-    -fx-background-radius: 10;
-    -fx-effect: dropshadow(gaussian, rgba(0,255,195,0.3), 8, 0.5, 0, 1);
+    -fx-border-color: #4dd0e1;
+    -fx-text-fill: #4dd0e1;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
 }
 
-/* TabPane */
-.tab-pane {
-    -fx-tab-min-width: 120px;
-    -fx-tab-max-width: 160px;
-    -fx-background-color: transparent;
+.secondary-button:hover {
+    -fx-border-color: #81d4fa;
+    -fx-text-fill: #81d4fa;
 }
 
-.tab-pane .tab {
-    -fx-background-color: #0c1018;
-    -fx-text-base-color: #a8ffec;
-}
-
-.tab-pane .tab:selected {
-    -fx-background-color: #00ffc3;
-    -fx-text-base-color: #0c1018;
-}
-
-/* Táblázatok */
+/* --- Táblázatok --- */
 .table-view {
-    -fx-background-color: #111820;
-    -fx-control-inner-background: #111820;
+    -fx-background-color: #0f141b;
+    -fx-control-inner-background: #0f141b;
     -fx-table-cell-border-color: #1d2733;
     -fx-font-size: 13px;
     -fx-border-color: transparent;
@@ -71,67 +65,218 @@
 
 .table-view .column-header, .table-view .filler {
     -fx-background-color: #1a202c;
-    -fx-text-fill: #ff00ff;
+    -fx-text-fill: #b0bec5;
 }
 
 .table-view .table-cell {
-    -fx-text-fill: #ff0f0f;
+    -fx-text-fill: #c9d1d9;
     -fx-background-color: transparent;
     -fx-alignment: CENTER_LEFT;
-    -fx-padding: 5px 8px;
+    -fx-padding: 5 8;
 }
 
 .table-view .table-row-cell:filled {
     -fx-background-color: #131920;
-    -fx-text-fill: #ffffff;
 }
 
 .table-view .table-row-cell:filled:hover {
-    -fx-background-color: #1d2633;
+    -fx-background-color: #1e2733;
 }
 
-.table-view .table-row-cell:filled:selected {
-    -fx-background-color: #1c2733;  /* sötét kijelölés */
-    -fx-text-fill: #ffffff;
+.table-view .table-row-cell:filled:selected,
+.table-view .table-cell:filled:selected {
+    -fx-background-color: #263238;
+    -fx-text-fill: #e0f7fa;
 }
 
-/* ComboBox és DatePicker */
+/* --- ComboBox és DatePicker --- */
 .combo-box, .date-picker {
-    -fx-background-color: #101b26;
-    -fx-text-fill: #ffffff;
-    -fx-border-color: #00ffc3;
-    -fx-border-radius: 8;
-    -fx-background-radius: 8;
+    -fx-background-color: #1c242f;
+    -fx-border-color: #4dd0e1;
+    -fx-text-fill: #e0f7fa;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-padding: 4 10;
+    -fx-cursor: hand;
+    -fx-font-size: 13px;
+}
+
+.combo-box:hover, .date-picker:hover {
+    -fx-border-color: #81d4fa;
+    -fx-effect: dropshadow(gaussian, rgba(77,208,225,0.2), 6, 0.3, 0, 1);
 }
 
 .combo-box .list-cell, .date-picker .text-field {
-    -fx-text-fill: #ffffff;
+    -fx-text-fill: #e0f2f1;
     -fx-background-color: transparent;
 }
 
-/* Diagramok */
-.chart-title, .chart-legend {
-    -fx-text-fill: #cccccc;
-    -fx-font-size: 14px;
+.combo-box-popup .list-view, .date-picker-popup .month-year-pane {
+    -fx-background-color: #0f141b;
+    -fx-border-color: #4dd0e1;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
 }
 
+.combo-box-popup .list-cell {
+    -fx-text-fill: #d0d8e0;
+    -fx-background-color: transparent;
+    -fx-padding: 6 10;
+}
+
+.combo-box-popup .list-cell:hover {
+    -fx-background-color: #1e2733;
+}
+
+.combo-box-popup .list-cell:selected {
+    -fx-background-color: #263238;
+    -fx-text-fill: #81d4fa;
+}
+
+.date-picker-popup {
+    -fx-background-color: #1c242f;
+    -fx-border-color: #4dd0e1;
+    -fx-border-radius: 6;
+}
+
+.date-picker-popup .calendar-grid {
+    -fx-background-color: #1c242f;
+}
+
+.date-picker-popup .cell {
+    -fx-text-fill: #cfd8dc;
+}
+
+.date-picker-popup .cell:hover {
+    -fx-background-color: #263238;
+}
+
+.date-picker-popup .cell:selected {
+    -fx-background-color: #4dd0e1;
+    -fx-text-fill: #0d1117;
+}
+
+/* --- Tooltip --- */
+.tooltip {
+    -fx-background-color: #1b232b;
+    -fx-text-fill: #cfe9e9;
+    -fx-padding: 8;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-font-size: 12px;
+}
+
+/* --- TabPane --- */
+.tab-pane {
+    -fx-tab-min-width: 110px;
+    -fx-tab-max-width: 150px;
+    -fx-background-color: transparent;
+}
+
+.tab-pane .tab {
+    -fx-background-color: #1c242f;
+    -fx-text-base-color: #b2dfdb;
+}
+
+.tab-pane .tab:selected {
+    -fx-background-color: #4dd0e1;
+    -fx-text-base-color: #0d1117;
+}
+
+/* --- Diagramok --- */
 .pie-chart, .bar-chart, .line-chart {
-    -fx-background-color: #121721;
+    -fx-background-color: #1f2a34;
+    -fx-border-color: linear-gradient(to right, #43a047, #e53935); /* zöld–piros keret */
+    -fx-border-width: 2;
+    -fx-border-radius: 6;
+    -fx-padding: 8;
 }
 
-/* Alsó export-sáv */
+/* --- Alsó export-sáv --- */
 .bottom-bar {
     -fx-background-color: #0c1018;
     -fx-border-color: #1d2733;
     -fx-border-width: 1 0 0 0;
 }
+/* --- Diagram cím és jelmagyarázat --- */
+.chart-title {
+    -fx-text-fill: #e0f7fa;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
 
-/* Tooltip */
-.tooltip {
-    -fx-background-color: #121c26;
-    -fx-text-fill: #e0ffff;
-    -fx-padding: 8;
-    -fx-border-radius: 6;
-    -fx-background-radius: 6;
+.chart-legend {
+    -fx-background-color: transparent;
+    -fx-text-fill: #b0bec5;
+}
+
+.chart-legend-item-symbol {
+    -fx-background-radius: 50%;
+}
+
+/* --- Általános tengely stílus --- */
+.axis {
+    -fx-tick-label-fill: #b0bec5;
+    -fx-tick-length: 6;
+    -fx-tick-label-font-size: 12px;
+}
+
+.axis .axis-label {
+    -fx-text-fill: #81d4fa;
+    -fx-font-weight: bold;
     -fx-font-size: 13px;
+}
+
+/* --- Vonaldiagram (LineChart) --- */
+.chart-series-line {
+    -fx-stroke-width: 2px;
+    -fx-effect: dropshadow(gaussian, rgba(77,208,225,0.3), 8, 0.3, 0, 0);
+}
+
+.chart-line-symbol {
+    -fx-background-radius: 4;
+    -fx-padding: 4;
+    -fx-background-color: #4dd0e1, white;
+}
+
+/* --- Oszlopdiagram (BarChart) --- */
+.chart-bar {
+    -fx-bar-fill: linear-gradient(to top, #4dd0e1, #00acc1);
+    -fx-background-insets: 0;
+    -fx-background-radius: 4;
+}
+
+.default-color0.chart-bar {
+    -fx-bar-fill: #4dd0e1;
+}
+.default-color1.chart-bar {
+    -fx-bar-fill: #e57373;
+}
+.default-color2.chart-bar {
+    -fx-bar-fill: #81c784;
+}
+
+/* --- Kördiagram (PieChart) --- */
+.chart-pie-label {
+    -fx-fill: #cfd8dc;
+    -fx-font-size: 13px;
+}
+
+.chart-pie {
+    -fx-pie-color: #4dd0e1;
+}
+
+.chart-pie .default-color0.chart-pie {
+    -fx-pie-color: #4db6ac;
+}
+.chart-pie .default-color1.chart-pie {
+    -fx-pie-color: #f06292;
+}
+.chart-pie .default-color2.chart-pie {
+    -fx-pie-color: #64b5f6;
+}
+
+/* --- Hover animáció PieChart szeletekre --- */
+.chart-pie .chart-pie:hover {
+    -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.25), 10, 0.5, 0, 0);
 }

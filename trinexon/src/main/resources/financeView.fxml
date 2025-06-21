@@ -9,7 +9,8 @@
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="System.trinexon.FinanceController"
-            stylesheets="@css/finance.css">
+            fx:id="rootPane"
+            stylesheets="/css/finance.css">
 
     <top>
         <HBox spacing="12" alignment="CENTER_LEFT" styleClass="top-bar ai-top-bar" fx:id="filterBar">
