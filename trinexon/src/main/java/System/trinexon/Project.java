@@ -14,8 +14,9 @@ public class Project {
     private final StringProperty status = new SimpleStringProperty();
     private final StringProperty manager = new SimpleStringProperty();
     private final DoubleProperty budget = new SimpleDoubleProperty();
+    private final StringProperty category = new SimpleStringProperty();
 
-    public Project(int id, String name, String description, LocalDate startDate, LocalDate endDate, String status, String manager, double budget) {
+    public Project(int id, String name, String description, LocalDate startDate, LocalDate endDate, String status, String manager, double budget, String category) {
         setId(id);
         setName(name);
         setDescription(description);
@@ -24,6 +25,7 @@ public class Project {
         setStatus(status);
         setManager(manager);
         setBudget(budget);
+        setCategory(category);
     }
 
     // Getterek
@@ -35,6 +37,7 @@ public class Project {
     public String getStatus() { return status.get(); }
     public String getManager() { return manager.get(); }
     public double getBudget() { return budget.get(); }
+    public String getCategory() { return category.get(); }
 
     // Setterek validációval
     public void setId(int id) {
@@ -59,7 +62,6 @@ public class Project {
     }
 
     public void setEndDate(LocalDate endDate) {
-        // Nem dob hibát, ha null — opcionális mezőként kezeljük
         this.endDate.set(endDate);
     }
 
@@ -77,6 +79,10 @@ public class Project {
         this.budget.set(budget);
     }
 
+    public void setCategory(String category) {
+        this.category.set(category != null ? category : "");
+    }
+
     // Property-k (JavaFX bindinghez)
     public IntegerProperty idProperty() { return id; }
     public StringProperty nameProperty() { return name; }
@@ -86,6 +92,7 @@ public class Project {
     public StringProperty statusProperty() { return status; }
     public StringProperty managerProperty() { return manager; }
     public DoubleProperty budgetProperty() { return budget; }
+    public StringProperty categoryProperty() { return category; }
 
     // Segítő metódusok
     public long getDurationDays() {
@@ -109,6 +116,7 @@ public class Project {
                ", budget=" + getBudget() +
                ", startDate=" + getStartDate() +
                ", endDate=" + getEndDate() +
+               ", category='" + getCategory() + '\'' +
                '}';
     }
 

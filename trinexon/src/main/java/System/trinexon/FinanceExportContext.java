@@ -8,6 +8,7 @@ import javafx.scene.control.TabPane;
 import java.io.File;
 import java.time.LocalDate;
 import java.util.Map;
+import java.util.Objects;
 
 public class FinanceExportContext {
 
@@ -24,32 +25,31 @@ public class FinanceExportContext {
 
     private final LineChart<String, Number> chart;
     private final TabPane tabPane;
-
     public FinanceExportContext(
-            File file,
-            LocalDate fromDate,
-            LocalDate toDate,
-            String selectedProject,
-            String selectedCategory,
-            String netProfitText,
-            String summaryText,
-            TableView<?> activeTable,
-            Map<String, TableView<?>> tableMap,
-            LineChart<String, Number> chart,
-            TabPane tabPane
-    ) {
-        this.file = file;
-        this.fromDate = fromDate;
-        this.toDate = toDate;
-        this.selectedProject = selectedProject;
-        this.selectedCategory = selectedCategory;
-        this.netProfitText = netProfitText;
-        this.summaryText = summaryText;
-        this.activeTable = activeTable;
-        this.tableMap = tableMap;
-        this.chart = chart;
-        this.tabPane = tabPane;
-    }
+    	    File file,
+    	    LocalDate fromDate,
+    	    LocalDate toDate,
+    	    String selectedProject,
+    	    String selectedCategory,
+    	    String netProfitText,
+    	    String summaryText,
+    	    TableView<?> activeTable,
+    	    Map<String, TableView<?>> tableMap,
+    	    LineChart<String, Number> chart,
+    	    TabPane tabPane
+    	) {
+    	    this.file = Objects.requireNonNull(file, "file must not be null");
+    	    this.fromDate = Objects.requireNonNull(fromDate, "fromDate must not be null");
+    	    this.toDate = Objects.requireNonNull(toDate, "toDate must not be null");
+    	    this.selectedProject = selectedProject;      // ezek lehetnek null-ok is, ha nincs szűrés
+    	    this.selectedCategory = selectedCategory;
+    	    this.netProfitText = Objects.requireNonNull(netProfitText, "netProfitText must not be null");
+    	    this.summaryText = Objects.requireNonNull(summaryText, "summaryText must not be null");
+    	    this.activeTable = activeTable;              // null esetén a szolgáltatás kezelni tudja az üres táblát
+    	    this.tableMap = Objects.requireNonNull(tableMap, "tableMap must not be null");
+    	    this.chart = chart;
+    	    this.tabPane = Objects.requireNonNull(tabPane, "tabPane must not be null");
+    	}
 
     // --- Getters ---
 

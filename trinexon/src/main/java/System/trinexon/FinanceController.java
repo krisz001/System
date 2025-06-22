@@ -8,30 +8,31 @@ import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.FileChooser;
-
 import java.io.File;
+import java.text.NumberFormat;
 import java.time.LocalDate;
+import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Logger;
 
 public class FinanceController {
     private static final Logger LOGGER = Logger.getLogger(FinanceController.class.getName());
 
-    // --- FXML komponensek ---
+    // --- FXML elemek ---
     @FXML private DatePicker fromDatePicker;
     @FXML private DatePicker toDatePicker;
     @FXML private ComboBox<String> categoryComboBox;
     @FXML private ComboBox<String> projectComboBox;
 
     @FXML private TableView<FinanceRecord> incomeStatementTable;
-    @FXML private TableView<FinanceRecord> yearlySummaryTable;
-    @FXML private TableView<FinanceRecord> balanceSheetTable;
-    @FXML private TableView<FinanceRecord> cashFlowTable;
-
     @FXML private TableColumn<FinanceRecord, String> incomeProjectColumn;
     @FXML private TableColumn<FinanceRecord, String> incomeTypeColumn;
     @FXML private TableColumn<FinanceRecord, String> incomeCategoryColumn;
     @FXML private TableColumn<FinanceRecord, Double> incomeAmountColumn;
+
+    @FXML private TableView<FinanceRecord> balanceSheetTable;
+    @FXML private TableView<FinanceRecord> cashFlowTable;
+    @FXML private TableView<FinanceRecord> yearlySummaryTable;
 
     @FXML private Label netProfitLabel;
     @FXML private Label summaryLabel;
@@ -41,114 +42,138 @@ public class FinanceController {
     @FXML private TabPane financeTabPane;
 
     // --- Szolgáltatások ---
-    private final FinanceService financeService = new FinanceService();
-    private final FinanceExportService exportService = new FinanceExportService();
+    private final FinanceService financeService       = new FinanceService();
+    private final FinanceExportService exportService  = new FinanceExportService();
 
-    // --- Inicializálás ---
+    /** Inicializálás FXML betöltésekor */
+    @FXML
     public void initialize() {
-        setupColumns();
+        setupTableColumns();
         financeService.setupRowStyle(incomeStatementTable);
         financeService.loadComboBoxes(categoryComboBox, projectComboBox);
         setDefaultDates();
         loadData();
     }
 
-    private void setupColumns() {
-        incomeProjectColumn.setCellValueFactory(new PropertyValueFactory<>("project"));
-        incomeTypeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
+    /** Beállítja az oszlopokat és az összegek formázását */
+    private void setupTableColumns() {
+        incomeProjectColumn .setCellValueFactory(new PropertyValueFactory<>("project"));
+        incomeTypeColumn    .setCellValueFactory(new PropertyValueFactory<>("type"));
         incomeCategoryColumn.setCellValueFactory(new PropertyValueFactory<>("category"));
-        incomeAmountColumn.setCellValueFactory(new PropertyValueFactory<>("amount"));
+        incomeAmountColumn  .setCellValueFactory(new PropertyValueFactory<>("amount"));
+
+        NumberFormat nf = NumberFormat.getInstance(new Locale("hu", "HU"));
+        nf.setMaximumFractionDigits(0);
+        nf.setGroupingUsed(true);
+
+        incomeAmountColumn.setCellFactory(tc -> new TableCell<FinanceRecord, Double>() {
+            @Override
+            protected void updateItem(Double amount, boolean empty) {
+                super.updateItem(amount, empty);
+                if (empty || amount == null) {
+                    setText("");
+                } else {
+                    setText(nf.format(amount) + " Ft");
+                }
+            }
+        });
     }
 
+    /** Ha üres, az év elejére és mára állítja a dátumpickereket */
     private void setDefaultDates() {
-        if (fromDatePicker.getValue() == null) fromDatePicker.setValue(LocalDate.of(2024, 1, 1));
-        if (toDatePicker.getValue() == null) toDatePicker.setValue(LocalDate.of(2026, 12, 31));
+        if (fromDatePicker.getValue() == null) fromDatePicker.setValue(LocalDate.now().withDayOfYear(1));
+        if (toDatePicker.getValue()   == null) toDatePicker.setValue(LocalDate.now());
     }
 
+    /** Betölti az összes táblát és diagramot a szűrők alapján */
     private void loadData() {
+        String catFilter  = "Összes kategória".equals(categoryComboBox.getValue()) ? null : categoryComboBox.getValue();
+        String projFilter = "Összes projekt" .equals(projectComboBox.getValue())   ? null : projectComboBox.getValue();
+
         ObservableList<FinanceRecord> records = financeService.loadData(
-                fromDatePicker.getValue(),
-                toDatePicker.getValue(),
-                categoryComboBox.getValue(),
-                projectComboBox.getValue(),
-                incomeStatementTable,
-                netProfitLabel,
-                summaryLabel,
-                profitTrendChart,
-                expenseBreakdownChart
+            fromDatePicker.getValue(),
+            toDatePicker.getValue(),
+            catFilter,
+            projFilter,
+            incomeStatementTable,
+            netProfitLabel,
+            summaryLabel,
+            profitTrendChart,
+            expenseBreakdownChart
         );
-        incomeStatementTable.setItems(records);
+
+        // ugyanazokat a rekordokat használjuk minden táblához
+        incomeStatementTable .setItems(records);
+        balanceSheetTable    .setItems(records);
+        cashFlowTable        .setItems(records);
+        yearlySummaryTable   .setItems(records);
     }
 
-    // --- Eseménykezelők ---
-    @FXML
-    private void onRefresh(ActionEvent event) {
+    /** Frissít (F5 gomb vagy gombnyomás) */
+    @FXML public void onRefresh(ActionEvent e) {
         loadData();
     }
 
-    @FXML
-    private void onFilter(ActionEvent event) {
+    /** Szűrők változása esetén is betöltjük az új adatokat */
+    @FXML private void onFilter(ActionEvent e) {
         loadData();
     }
 
-    @FXML
-    private void onExportPdf() {
-        File file = chooseFile("PDF exportálása", "kimutatas.pdf", "*.pdf", "PDF fájl");
-        if (file != null) {
-            FinanceExportContext context = buildExportContext(file);
-            exportService.exportToPdf(context);
-        }
+    /** PDF export */
+    @FXML private void onExportPdf() {
+        File file = chooseSaveFile("PDF exportálása", "kimutatas.pdf", "*.pdf", "PDF fájl");
+        if (file != null) exportService.exportToPdf(buildExportContext(file));
     }
 
-    @FXML
-    private void onExportExcel() {
-        File file = chooseFile("Excel exportálása", "kimutatas.xlsx", "*.xlsx", "Excel fájl");
-        if (file != null) {
-            FinanceExportContext context = buildExportContext(file);
-            exportService.exportToExcel(context);
-        }
+    /** Excel export */
+    @FXML private void onExportExcel() {
+        File file = chooseSaveFile("Excel exportálása", "kimutatas.xlsx", "*.xlsx", "Excel fájl");
+        if (file != null) exportService.exportToExcel(buildExportContext(file));
     }
 
-    // --- Segédfüggvények ---
-    private File chooseFile(String title, String defaultName, String extension, String description) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle(title);
-        fileChooser.setInitialFileName(defaultName);
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(description, extension));
-        return fileChooser.showSaveDialog(null);
+    /** Fájl mentés dialógus */
+    private File chooseSaveFile(String title, String initialName, String extPattern, String desc) {
+        FileChooser fc = new FileChooser();
+        fc.setTitle(title);
+        fc.setInitialFileName(initialName);
+        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter(desc, extPattern));
+        return fc.showSaveDialog(null);
     }
 
+    /** Külső hívásra is elérhető metódus a frissítésre */
+    public void refresh() {
+        loadData();
+    }
+
+    /** Kontextus összeállítása exporthoz */
     private FinanceExportContext buildExportContext(File file) {
         return new FinanceExportContext(
-                file,
-                fromDatePicker.getValue(),
-                toDatePicker.getValue(),
-                projectComboBox.getValue(),
-                categoryComboBox.getValue(),
-                netProfitLabel.getText(),
-                summaryLabel.getText(),
-                getActiveTableView(),
-                Map.of(
-                        "Eredménykimutatás", incomeStatementTable,
-                        "Mérleg", balanceSheetTable,
-                        "Cash Flow", cashFlowTable,
-                        "Éves összesítés", yearlySummaryTable
-                ),
-                profitTrendChart,
-                financeTabPane
+            file,
+            fromDatePicker.getValue(),
+            toDatePicker.getValue(),
+            projectComboBox.getValue(),
+            categoryComboBox.getValue(),
+            netProfitLabel.getText(),
+            summaryLabel.getText(),
+            getActiveTableView(),
+            Map.of(
+              "Eredménykimutatás", incomeStatementTable,
+              "Mérleg",           balanceSheetTable,
+              "Cash Flow",        cashFlowTable,
+              "Éves összesítés",  yearlySummaryTable
+            ),
+            profitTrendChart,
+            financeTabPane
         );
     }
 
+    /** A kiválasztott tab-hoz tartozó táblázat */
     private TableView<FinanceRecord> getActiveTableView() {
-        Tab selectedTab = financeTabPane.getSelectionModel().getSelectedItem();
-        if (selectedTab == null) return null;
-
-        return switch (selectedTab.getText()) {
-            case "Eredménykimutatás" -> incomeStatementTable;
-            case "Mérleg" -> balanceSheetTable;
-            case "Cash Flow" -> cashFlowTable;
+        return switch (financeTabPane.getSelectionModel().getSelectedItem().getText()) {
+            case "Mérleg"          -> balanceSheetTable;
+            case "Cash Flow"       -> cashFlowTable;
             case "Éves összesítés" -> yearlySummaryTable;
-            default -> null;
+            default                -> incomeStatementTable;
         };
     }
 }

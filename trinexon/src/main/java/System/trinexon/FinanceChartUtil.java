@@ -28,35 +28,40 @@ public class FinanceChartUtil {
         series.setName("Havi bevétel");
 
         String sql = """
-            SELECT EXTRACT(YEAR_MONTH FROM r.date) AS ym,
-                   MONTH(r.date) AS month,
-                   YEAR(r.date) AS year,
-                   SUM(r.amount) AS amount
+            SELECT
+              YEAR(r.date)  AS year,
+              MONTH(r.date) AS month,
+              SUM(r.amount) AS amount
             FROM revenues r
             JOIN projects p ON r.project_id = p.id
             JOIN categories c ON r.category_id = c.id
             WHERE r.date BETWEEN ? AND ?
-        """ + (isFiltered(category) ? "AND c.name = ? " : "") +
-               (isFiltered(project) ? "AND p.name = ? " : "") +
-               "GROUP BY ym, year, month ORDER BY year, month";
+        """
+        + (isFiltered(category) ? " AND c.name = ? " : "")
+        + (isFiltered(project)  ? " AND p.name = ? " : "")
+        + " GROUP BY YEAR(r.date), MONTH(r.date)"
+        + " ORDER BY YEAR(r.date), MONTH(r.date)";
 
         try (Connection conn = Database.connect();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setDate(1, Date.valueOf(from));
             ps.setDate(2, Date.valueOf(to));
-            int i = 3;
-            if (isFiltered(category)) ps.setString(i++, category);
-            if (isFiltered(project)) ps.setString(i, project);
+            int idx = 3;
+            if (isFiltered(category)) {
+                ps.setString(idx++, category);
+            }
+            if (isFiltered(project)) {
+                ps.setString(idx, project);
+            }
 
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    int month = rs.getInt("month");
-                    int year = rs.getInt("year");
-                    double amount = rs.getDouble("amount");
-
-                    String label = getMonthName(month) + " " + year;
-                    series.getData().add(new XYChart.Data<>(label, amount));
+                    int y = rs.getInt("year");
+                    int m = rs.getInt("month");
+                    double amt = rs.getDouble("amount");
+                    String label = getMonthName(m) + " " + y;
+                    series.getData().add(new XYChart.Data<>(label, amt));
                 }
             }
 
@@ -78,22 +83,29 @@ public class FinanceChartUtil {
         chart.getData().clear();
 
         String sql = """
-            SELECT e.category AS category, SUM(e.amount) AS total
+            SELECT 
+              e.category AS category, 
+              SUM(e.amount) AS total
             FROM expenses e
             JOIN projects p ON e.project_id = p.id
             WHERE e.date BETWEEN ? AND ?
-        """ + (isFiltered(category) ? "AND e.category = ? " : "") +
-               (isFiltered(project) ? "AND p.name = ? " : "") +
-               "GROUP BY e.category";
+        """
+        + (isFiltered(category) ? " AND e.category = ? " : "")
+        + (isFiltered(project)  ? " AND p.name = ? "     : "")
+        + " GROUP BY e.category";
 
         try (Connection conn = Database.connect();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setDate(1, Date.valueOf(from));
             ps.setDate(2, Date.valueOf(to));
-            int i = 3;
-            if (isFiltered(category)) ps.setString(i++, category);
-            if (isFiltered(project)) ps.setString(i, project);
+            int idx = 3;
+            if (isFiltered(category)) {
+                ps.setString(idx++, category);
+            }
+            if (isFiltered(project)) {
+                ps.setString(idx, project);
+            }
 
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -108,12 +120,16 @@ public class FinanceChartUtil {
         }
     }
 
-    // Segédfüggvények
+    // --- Segédfüggvények ---
+
     private static boolean isFiltered(String value) {
-        return value != null && !value.equals("Összes kategória") && !value.equals("Összes projekt");
+        return value != null
+            && !value.equals("Összes kategória")
+            && !value.equals("Összes projekt");
     }
 
     private static String getMonthName(int month) {
-        return java.time.Month.of(month).getDisplayName(TextStyle.SHORT, Locale.getDefault());
+        return java.time.Month.of(month)
+                   .getDisplayName(TextStyle.SHORT, Locale.getDefault());
     }
 }

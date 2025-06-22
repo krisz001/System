@@ -10,6 +10,13 @@
     -fx-selection-bar-non-focused: #1c242f;
 }
 
+.tool-bar {
+    -fx-background-color: #0d1117;
+    -fx-border-color: #1d2733;
+    -fx-border-width: 0 0 1px 0; /* csak az alsó szélén legyen vonal */
+    -fx-padding: 8;
+}
+
 /* --- Címkék --- */
 .label {
     -fx-text-fill: #c9d1d9;
@@ -186,7 +193,7 @@
 /* --- Diagramok --- */
 .pie-chart, .bar-chart, .line-chart {
     -fx-background-color: #1f2a34;
-    -fx-border-color: linear-gradient(to right, #43a047, #e53935); /* zöld–piros keret */
+    -fx-border-color: linear-gradient(to right, #43a047, #e53935);
     -fx-border-width: 2;
     -fx-border-radius: 6;
     -fx-padding: 8;
@@ -198,88 +205,39 @@
     -fx-border-color: #1d2733;
     -fx-border-width: 1 0 0 0;
 }
-/* --- Diagram cím és jelmagyarázat --- */
-.chart-title {
-    -fx-text-fill: #e0f7fa;
-    -fx-font-size: 16px;
-    -fx-font-weight: bold;
+
+/* --- Projekt részletek --- */
+.detail-section {
+    -fx-background-color: #0f141b;
+    -fx-border-color: #1d2733;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
 }
 
-.chart-legend {
+/* --- Projekt mezők rácsa --- */
+.detail-grid {
     -fx-background-color: transparent;
-    -fx-text-fill: #b0bec5;
 }
 
-.chart-legend-item-symbol {
-    -fx-background-radius: 50%;
+/* --- Címkék a rácsban --- */
+.detail-grid .label {
+    -fx-text-fill: #c9d1d9;
+    -fx-font-size: 13px;
 }
 
-/* --- Általános tengely stílus --- */
-.axis {
-    -fx-tick-label-fill: #b0bec5;
-    -fx-tick-length: 6;
-    -fx-tick-label-font-size: 12px;
-}
-
-.axis .axis-label {
-    -fx-text-fill: #81d4fa;
+/* --- Projekt gombok --- */
+.detail-section .button {
+    -fx-background-color: linear-gradient(to right, #69f0ae, #00acc1);
+    -fx-text-fill: #0d1117;
     -fx-font-weight: bold;
-    -fx-font-size: 13px;
+    -fx-background-radius: 8;
 }
 
-/* --- Vonaldiagram (LineChart) --- */
-.chart-series-line {
-    -fx-stroke-width: 2px;
-    -fx-effect: dropshadow(gaussian, rgba(77,208,225,0.3), 8, 0.3, 0, 0);
+.detail-section .button:hover {
+    -fx-background-color: linear-gradient(to right, #81d4fa, #00e5ff);
 }
 
-.chart-line-symbol {
-    -fx-background-radius: 4;
-    -fx-padding: 4;
-    -fx-background-color: #4dd0e1, white;
-}
-
-/* --- Oszlopdiagram (BarChart) --- */
-.chart-bar {
-    -fx-bar-fill: linear-gradient(to top, #4dd0e1, #00acc1);
-    -fx-background-insets: 0;
-    -fx-background-radius: 4;
-}
-
-.default-color0.chart-bar {
-    -fx-bar-fill: #4dd0e1;
-}
-.default-color1.chart-bar {
-    -fx-bar-fill: #e57373;
-}
-.default-color2.chart-bar {
-    -fx-bar-fill: #81c784;
-}
-
-/* --- Kördiagram (PieChart) --- */
-.chart-pie-label {
-    -fx-fill: #cfd8dc;
-    -fx-font-size: 13px;
-}
-
-.chart-pie {
-    -fx-pie-color: #4dd0e1;
-}
-
-.chart-pie .default-color0.chart-pie {
-    -fx-pie-color: #4db6ac;
-}
-.chart-pie .default-color1.chart-pie {
-    -fx-pie-color: #f06292;
-}
-.chart-pie .default-color2.chart-pie {
-    -fx-pie-color: #64b5f6;
-}
-
-/* --- Hover animáció PieChart szeletekre --- */
-.chart-pie .chart-pie:hover {
-    -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.25), 10, 0.5, 0, 0);
-}
+/* --- Leírás mező (TextArea) --- */
 .description-area {
     -fx-background-color: #1a1f27;
     -fx-border-color: #69f0ae;
@@ -290,21 +248,6 @@
     -fx-font-size: 13px;
 }
 
-.description-area:focused {
-    -fx-border-color: #81d4fa;
-    -fx-effect: dropshadow(gaussian, #69f0ae, 8, 0.4, 0, 0);
-}
-.description-area {
-    -fx-background-color: #1a1f27;
-    -fx-border-color: #69f0ae;
-    -fx-text-fill: #e0f7fa;
-    -fx-border-radius: 8;
-    -fx-background-radius: 8;
-    -fx-padding: 6 12;
-    -fx-font-size: 13px;
-}
-
-/* Belső scroll pane is sötét legyen */
 .description-area .content {
     -fx-background-color: #1a1f27;
 }
