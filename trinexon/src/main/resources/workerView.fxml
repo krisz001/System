@@ -2,106 +2,130 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
 
-<VBox prefHeight="600.0" prefWidth="900.0"
-      xmlns="http://javafx.com/javafx/20"
-      xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane prefHeight="800" prefWidth="1200"
+            xmlns="http://javafx.com/javafx/23.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            stylesheets="css/work.css"
+            fx:controller="System.trinexon.EmployeeOverviewController">
 
-  <fx:define>
-    <Font fx:id="x1" size="18.0" />
-    <Color fx:id="x2" red="0.624" green="0.624" blue="0.624" />
-    <Font fx:id="x3" size="11.0" />
-    <Color fx:id="x4" red="0.625" green="0.625" blue="0.625" />
-  </fx:define>
+  <!-- ===== bal oldali sidebar ===== -->
+  <left>
+    <VBox prefWidth="200" spacing="20" styleClass="sidebar">
+      <padding><Insets bottom="20" left="10" right="10" top="20" /></padding>
+      <ImageView fx:id="logoView" fitWidth="120" preserveRatio="true" styleClass="logo" />
+      <Label styleClass="sidebar-title" text="Dolgozók" />
+      <ListView fx:id="departmentsList" styleClass="sidebar-list" />
+    </VBox>
+  </left>
 
-  <children>
-    <MenuBar VBox.vgrow="NEVER">
-      <menus>
-        <Menu text="File">
-          <items>
-            <MenuItem text="New" />
-            <MenuItem text="Open…" />
-            <Menu text="Open Recent" />
-            <SeparatorMenuItem />
-            <MenuItem text="Close" />
-            <MenuItem text="Save" />
-            <MenuItem text="Save As…" />
-            <MenuItem text="Revert" />
-            <SeparatorMenuItem />
-            <MenuItem text="Preferences…" />
-            <SeparatorMenuItem />
-            <MenuItem text="Quit" />
-          </items>
-        </Menu>
-        <Menu text="Edit">
-          <items>
-            <MenuItem text="Undo" />
-            <MenuItem text="Redo" />
-            <SeparatorMenuItem />
-            <MenuItem text="Cut" />
-            <MenuItem text="Copy" />
-            <MenuItem text="Paste" />
-            <MenuItem text="Delete" />
-            <SeparatorMenuItem />
-            <MenuItem text="Select All" />
-            <MenuItem text="Unselect All" />
-          </items>
-        </Menu>
-        <Menu text="Help">
-          <items>
-            <MenuItem text="About MyHelloApp" />
-          </items>
-        </Menu>
-      </menus>
-    </MenuBar>
+  <!-- ===== tetején toolbar ===== -->
+  <top>
+    <ToolBar styleClass="toolbar">
+      <HBox alignment="CENTER_LEFT" spacing="10" HBox.hgrow="ALWAYS">
+        <Label styleClass="app-title" text="🤖 AI Dolgozókezelő" />
+        <Region HBox.hgrow="ALWAYS" />
+        <TextField fx:id="searchField" promptText="Keresés név vagy pozíció alapján..." styleClass="search-field" />
+      </HBox>
+      <Button fx:id="btnAddEmployee" onAction="#onAddEmployee" prefHeight="28.0" prefWidth="39.0" styleClass="button success" text="👀" textFill="#0a1dc9" />
+      <Button fx:id="btnOpenSalary" onAction="#onOpenSalary" text="💰 Fizetések" styleClass="button ai" />
+    </ToolBar>
+  </top>
 
-    <SplitPane dividerPositions="0.2505567928730512, 0.7505567928730512"
-               VBox.vgrow="ALWAYS">
-      <items>
-        <AnchorPane>
-          <children>
-            <Label alignment="CENTER" layoutX="14.0" layoutY="14.0"
-                   prefWidth="60.0" text="Master" textAlignment="CENTER"
-                   font="$x1" textFill="$x2" />
-          </children>
-        </AnchorPane>
+  <!-- ===== középső tartalom ===== -->
+  <center>
+    <SplitPane dividerPositions="0.6" orientation="HORIZONTAL" styleClass="main-split">
+      <!-- dolgozói tábla -->
+      <TableView fx:id="employeeTable" styleClass="ai-table">
+        <columns>
+          <TableColumn fx:id="colId" prefWidth="60" text="ID" />
+          <TableColumn fx:id="colName" prefWidth="180" text="Név" />
+          <TableColumn fx:id="colPosition" prefWidth="140" text="Beosztás" />
+          <TableColumn fx:id="colDept" prefWidth="140" text="Osztály" />
+          <TableColumn fx:id="colHireDate" prefWidth="120" text="Belépés" />
+          <TableColumn fx:id="colStatus" prefWidth="100" text="Állapot" />
+          <TableColumn fx:id="colActions" prefWidth="150" text="Műveletek" />
+        </columns>
+      </TableView>
 
-        <ScrollPane>
-          <content>
-            <AnchorPane id="Content" prefHeight="545.0" prefWidth="430.0">
-              <children>
-                <Label alignment="CENTER" layoutX="14.0" layoutY="14.0"
-                       text="View" textAlignment="CENTER"
-                       font="$x1" textFill="$x2" />
-              </children>
-            </AnchorPane>
-          </content>
-        </ScrollPane>
+      <!-- részletező / szerkesztő panel -->
+      <VBox spacing="15" styleClass="detail-pane">
+        <padding><Insets bottom="20" left="20" right="20" top="20" /></padding>
+        <Label styleClass="detail-title" text="👤 Dolgozó adatai" textFill="#ffc107">
+          <font><Font name="System Bold" size="19.0" /></font>
+        </Label>
+        <GridPane hgap="10" vgap="12">
+          <Label text="Név:" textFill="#ffc107" GridPane.columnIndex="0" GridPane.rowIndex="0">
+            <font><Font name="System Bold" size="13.0" /></font>
+          </Label>
+          <TextField fx:id="detailName" GridPane.columnIndex="1" GridPane.rowIndex="0" />
 
-        <AnchorPane>
-          <children>
-            <Label alignment="CENTER" layoutX="14.0" layoutY="14.0"
-                   text="Details" textAlignment="CENTER"
-                   font="$x1" textFill="$x2" />
-          </children>
-        </AnchorPane>
-      </items>
+          <Label text="Beosztás:" textFill="#ffc107" GridPane.columnIndex="0" GridPane.rowIndex="1">
+            <font><Font name="System Bold" size="13.0" /></font>
+          </Label>
+          <TextField fx:id="detailPosition" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+          <Label text="Osztály:" textFill="#ffc107" GridPane.columnIndex="0" GridPane.rowIndex="2">
+            <font><Font name="System Bold" size="13.0" /></font>
+          </Label>
+          <ComboBox fx:id="detailDept" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+          <Label text="Belépés dátuma:" textFill="#ffc107" GridPane.columnIndex="0" GridPane.rowIndex="3">
+            <font><Font name="System Bold" size="13.0" /></font>
+          </Label>
+          <DatePicker fx:id="detailHireDate" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+
+          <Label text="Állapot:" textFill="#ffc107" GridPane.columnIndex="0" GridPane.rowIndex="4">
+            <font><Font name="System Bold" size="13.0" /></font>
+          </Label>
+          <ComboBox fx:id="detailStatus" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+
+          <Label text="E-mail: 📧" textFill="#ffc107" GridPane.columnIndex="0" GridPane.rowIndex="5">
+            <font><Font name="System Bold" size="13.0" /></font>
+          </Label>
+          <TextField fx:id="detailEmail" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+
+          <Label text="Telefon: ☎️" textFill="#ffc107" GridPane.columnIndex="0" GridPane.rowIndex="6">
+            <font><Font name="System Bold" size="14.0" /></font>
+          </Label>
+          <TextField fx:id="detailPhone" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+
+          <columnConstraints>
+            <ColumnConstraints />
+            <ColumnConstraints />
+          </columnConstraints>
+          <rowConstraints>
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+          </rowConstraints>
+        </GridPane>
+
+        <HBox alignment="CENTER_RIGHT" spacing="12">
+          <Button fx:id="btnSave" onAction="#onSaveEmployee" styleClass="button primary" text="💾" textFill="#ffc107">
+            <font><Font size="18.0" /></font>
+          </Button>
+          <Button fx:id="btnDelete" onAction="#onDeleteEmployee" prefHeight="35.0" prefWidth="46.0" styleClass="button danger" text="🗑️" textFill="#ffc107">
+            <font><Font size="17.0" /></font>
+          </Button>
+        </HBox>
+      </VBox>
     </SplitPane>
+  </center>
 
-    <HBox alignment="CENTER_LEFT" spacing="5.0" VBox.vgrow="NEVER">
-      <children>
-        <Label text="Left status" maxHeight="Infinity"
-               font="$x3" textFill="$x4" HBox.hgrow="ALWAYS" />
-        <Pane HBox.hgrow="ALWAYS" />
-        <Label text="Right status"
-               font="$x3" textFill="$x4" HBox.hgrow="NEVER" />
-      </children>
-      <padding>
-        <Insets top="3.0" bottom="3.0" left="3.0" right="3.0" />
-      </padding>
+  <!-- ===== alul status bar ===== -->
+  <bottom>
+    <HBox alignment="CENTER_LEFT" spacing="10" styleClass="status-bar">
+      <Label fx:id="statusLabel" styleClass="status-text" text="Készen áll…" />
+      <Region HBox.hgrow="ALWAYS" />
+      <Label fx:id="totalEmployees" styleClass="status-text" text="Összesen: 0" />
     </HBox>
-  </children>
-</VBox>
+  </bottom>
+</BorderPane>

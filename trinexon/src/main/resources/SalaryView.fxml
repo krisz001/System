@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane prefHeight="600" prefWidth="800" stylesheets="css/work.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="System.trinexon.SalaryController">
+   <top>
+        <VBox spacing="20" styleClass="detail-pane" BorderPane.alignment="CENTER">
+            <padding><Insets bottom="30" left="30" right="30" top="30" /></padding>
+
+            <Label styleClass="detail-title" text="💰 AI Salary Recommendation" textFill="WHITE">
+                <font><Font name="System Bold" size="20.0" /></font>
+            </Label>
+
+            <GridPane hgap="12" vgap="15">
+                <Label styleClass="form-label" text="Dolgozó:" textFill="WHITE" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                <ComboBox fx:id="employeeCombo" prefWidth="300" promptText="Válassz dolgozót..." GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+                <Label styleClass="form-label" text="Fizetés:" textFill="WHITE" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                <TextField fx:id="salaryField" promptText="pl. 450000" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+                <Label styleClass="form-label" text="Hónap:" textFill="WHITE" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                <TextField fx:id="monthField" promptText="pl. 2025-06" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <columnConstraints>
+               <ColumnConstraints />
+               <ColumnConstraints />
+            </columnConstraints>
+            <rowConstraints>
+               <RowConstraints />
+               <RowConstraints />
+               <RowConstraints />
+            </rowConstraints>
+            </GridPane>
+
+            <HBox spacing="15">
+                <Button onAction="#onSaveSalary" styleClass="button success" text="💾 Mentés" />
+                <Button onAction="#onGetRecommendation" styleClass="button ai" text="🤖 AI ajánlás" />
+            </HBox>
+
+          <Label fx:id="statusLabel" styleClass="status-text" wrapText="true" textFill="WHITE" />
+        </VBox>
+   </top>
+
+</BorderPane>

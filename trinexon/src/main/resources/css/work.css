@@ -1,0 +1,88 @@
+/* Általános alapszínek */
+.root {
+  -fx-background-color: #1e1e2f;
+  -fx-font-family: "Segoe UI", sans-serif;
+  -fx-text-fill: #e0e0e0;
+}
+
+/* TOOLBAR */
+.toolbar {
+  -fx-background-color: #2a2a3b;
+  -fx-padding: 0.5em 1em;
+  -fx-spacing: 0.5em;
+}
+.app-title {
+  -fx-font-size: 1.25em;
+  -fx-text-fill: #65d1e0;
+}
+.search-field {
+  -fx-background-radius: 4;
+  -fx-background-color: #33334d;
+  -fx-text-fill: #e0e0e0;
+}
+
+/* SIDEBAR */
+.sidebar {
+  -fx-background-color: #24243c;
+}
+.logo {
+  /* ide jöhet egy AI ikon */
+}
+.sidebar-title {
+  -fx-text-fill: #65d1e0;
+  -fx-font-size: 1.1em;
+}
+.sidebar-list {
+  -fx-background-color: transparent;
+  -fx-control-inner-background: transparent;
+  -fx-cell-hover-color: #33334d;
+}
+
+/* TÁBLÁZAT */
+.ai-table {
+  -fx-background-color: transparent;
+  -fx-control-inner-background: #29293a;
+  -fx-table-cell-border-color: transparent;
+  -fx-table-header-border-color: transparent;
+}
+.ai-table .column-header-background {
+  -fx-background-color: #2a2a3b;
+}
+.ai-table .column-header, .ai-table .table-cell {
+  -fx-alignment: CENTER_LEFT;
+  -fx-text-fill: #e0e0e0;
+}
+
+/* RÉSZLETEZŐ PANEL */
+.detail-pane {
+  -fx-background-color: #2a2a3b;
+  -fx-background-radius: 6;
+  -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.5) , 10,0,0,2 );
+}
+
+/* GOMBOK */
+.btn-primary {
+  -fx-background-color: #65d1e0;
+  -fx-text-fill: #1e1e2f;
+  -fx-background-radius: 4;
+}
+.btn-primary:hover {
+  -fx-background-color: #4bb0b8;
+}
+.btn-danger {
+  -fx-background-color: #e06c75;
+  -fx-text-fill: white;
+  -fx-background-radius: 4;
+}
+.btn-danger:hover {
+  -fx-background-color: #c6535f;
+}
+
+/* STÁTUSSOR */
+.status-bar {
+  -fx-background-color: #2a2a3b;
+  -fx-padding: 0.4em 1em;
+}
+.status-text {
+  -fx-font-size: 0.9em;
+}
